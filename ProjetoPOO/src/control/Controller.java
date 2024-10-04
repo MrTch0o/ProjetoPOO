@@ -18,8 +18,8 @@ import model.dao.Utils;
 import view.MenuInicio;
 
 /**
- * ctrl+j e ctrl+alt+shift+j
- * testesteste
+ * ctrl+j e ctrl+alt+shift+j testesteste
+ *
  * @author Gabriel
  */
 public class Controller {
@@ -762,6 +762,7 @@ public class Controller {
 
                 pagamento = new Pagamento();
                 fornecedor = new Fornecedor();
+                calendario = new Calendario();
                 String fornecedorId = JOptionPane.showInputDialog("Digite o ID do fornecedor:");
                 if (!ValidaInput.string(fornecedorId) || !ValidaInput.stringEhInt(fornecedorId)) { // Verifica se contem somente numero na string
                     return;
@@ -810,11 +811,26 @@ public class Controller {
                     return;
                 }
                 try {
-                    pagamento.setData(utils.formatDate(dataPagamento));
+                    calendario.setData(utils.formatDate(dataPagamento));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
                 }
+
+                calendario.setTitulo("Pagamento Fornecedor " + pagamento.getID());
+                String stringDescricao = "";
+
+                if ("PARCELADO".equals(pagamento.getTipo())) {
+                    for (int i = 0; i < pagamento.getParcela(); i++) {
+                        stringDescricao += ("valor: " + pagamento.getValor() + "\n tipo: " + pagamento.getTipo() + "\nQtd Parcelas: " + i + " de " + pagamento.getParcela() + "\n");
+                    }
+                }
+
+                calendario.setDescricao(stringDescricao);
+                calendariosDatabase.create(calendario);
+
+                JOptionPane.showMessageDialog(null, "Evento adicionado com sucesso!\n");
+                return;
 
                 pagamentosDatabase.create(pagamento);
                 JOptionPane.showMessageDialog(null, "Pagamento incluído com sucesso!");
@@ -1031,7 +1047,7 @@ public class Controller {
                 return;
             case 3: //visualizar compromissos hoje
                 todosCalendarios = calendariosDatabase.getAll();
-                 LocalDate dH;
+                LocalDate dH;
                 //calendario = new Calendario();
                 String dataHoje = JOptionPane.showInputDialog("Digite a data do evento (dd/mm/yyyy):");
                 if (!ValidaInput.string(dataHoje)) {
@@ -1046,8 +1062,9 @@ public class Controller {
                 if (todosCalendarios.length > 0) {
                     String strCalendarios = "";
                     for (Calendario c : todosCalendarios) {
-                        if (dH.isEqual(c.getData()) )
-                        strCalendarios += c.toString() + "\n";
+                        if (dH.isEqual(c.getData())) {
+                            strCalendarios += c.toString() + "\n";
+                        }
                     }
                     JOptionPane.showMessageDialog(null, strCalendarios);
                 } else {
