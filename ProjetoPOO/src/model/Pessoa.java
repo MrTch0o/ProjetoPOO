@@ -62,7 +62,8 @@ public class Pessoa extends Identifiable {
 
     @Override
     public String toString() {
-        return " Pessoa{" + "id=" + getID() + ", nome=" + nome + ", nascimento=" + nascimento + ", telefone=" + telefone + ", dataCriacao=" + dataCriacao + ", dataModificacao=" + dataModificacao + '}';
+        return "PESSOA => | id = " + super.getID() + " | nome = " + nome + " | nascimento = " + nascimento + " | telefone = " + telefone + " | dataCriacao = " + dataCriacao 
+                + " | dataModificacao = " + dataModificacao + " |";
     }
 
 }

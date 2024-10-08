@@ -527,7 +527,7 @@ public class Controller {
                     fornecedor.setDataModificacao();
 
                     //Atualizar registro no banco de dados
-                    usuariosDatabase.update(usuario);
+                    fornecedoresDatabase.update(fornecedor);
                     JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Fornecedor com ID " + idAlterar + " não encontrado.");
@@ -548,7 +548,7 @@ public class Controller {
                     }
                 }
                 if (fornecedor != null) {
-                    int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuário com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
+                    int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o fornecedor com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
                         fornecedoresDatabase.delete(Integer.parseInt(idRemover));
                         JOptionPane.showMessageDialog(null, "Fornecedor removido com sucesso!");
@@ -762,7 +762,9 @@ public class Controller {
 
                 pagamento = new Pagamento();
                 fornecedor = new Fornecedor();
-                calendario = new Calendario();
+                //calendario = new Calendario();
+
+                //define o fornecedor do pagamento
                 String fornecedorId = JOptionPane.showInputDialog("Digite o ID do fornecedor:");
                 if (!ValidaInput.string(fornecedorId) || !ValidaInput.stringEhInt(fornecedorId)) { // Verifica se contem somente numero na string
                     return;
@@ -773,6 +775,8 @@ public class Controller {
                     return;
                 }
                 pagamento.setFornecedor(fornecedor);
+
+                //define o valor do pagamento
                 String valorPagamento = JOptionPane.showInputDialog("Digite o valor do pagamento:");
                 if (!ValidaInput.string(valorPagamento) || !ValidaInput.stringEhDouble(valorPagamento)) { // Verifica se contem somente numero na string com virgula
                     return;
@@ -782,20 +786,19 @@ public class Controller {
                     return;
                 }
                 pagamento.setValor(Double.parseDouble(valorPagamentoFormat));
+
+                //define o tipo do pagamento
                 String tipo = JOptionPane.showInputDialog("Digite o tipo do pagamento:\n1 - A VISTA\n2 - PARCELADO");
                 if (!ValidaInput.string(tipo) || !ValidaInput.stringEhInt(tipo)) {
                     return;
                 }
-                pagamento.setTipo(Integer.parseInt(tipo));
-                if (pagamento.getTipo() == 1) {
-                    pagamento.setParcela(0);
-                } else {
-                    String qtdParc = JOptionPane.showInputDialog("Digite quantas parcelas:");
-                    if (!ValidaInput.string(qtdParc) || !ValidaInput.stringEhInt(qtdParc)) {
-                        return;
-                    }
-                    pagamento.setParcela(Integer.parseInt(qtdParc));
+                if (!("1".equals(tipo) || "2".equals(tipo))) {
+                    JOptionPane.showMessageDialog(null, "Digite o tipo do pagamento:\n1 - A VISTA\n2 - PARCELADO");
+                    return;
                 }
+                pagamento.setTipo(Integer.parseInt(tipo));
+                
+                //define a descriçao do pagamento
                 String descricao = JOptionPane.showInputDialog("Digite a descrição do pagamento (Obrigatório mais de 15 caracteres na descrição):");
                 if (!ValidaInput.string(descricao)) {
                     return;
@@ -806,33 +809,59 @@ public class Controller {
                 } else {
                     pagamento.setDescricao(descricao);
                 }
+
+                //define a data do pagamento
                 String dataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd/mm/yyyy):");
                 if (!ValidaInput.string(dataPagamento)) {
                     return;
                 }
                 try {
-                    calendario.setData(utils.formatDate(dataPagamento));
+                    pagamento.setData(utils.formatDate(dataPagamento));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
                 }
 
-                calendario.setTitulo("Pagamento Fornecedor " + pagamento.getID());
+                
                 String stringDescricao = "";
+                String intervaloPagamento = "";
+                if (pagamento.getTipo() == 1) {
+                    pagamento.setParcela(0);
+                } else {
+                    //define a quantidade de parcelas
+                    String qtdParc = JOptionPane.showInputDialog("Digite quantas parcelas:");
+                    if (!ValidaInput.string(qtdParc) || !ValidaInput.stringEhInt(qtdParc)) {
+                        return;
+                    }
+                    pagamento.setParcela(Integer.parseInt(qtdParc));
+                    intervaloPagamento = JOptionPane.showInputDialog("Digite o intervalo de dias corridos (1 - 30) entre os pagamentos das parcelas:");
+                    if (!ValidaInput.string(intervaloPagamento) || !ValidaInput.stringEhInt(intervaloPagamento)) {
+                        return;
+                    }
 
-                if ("PARCELADO".equals(pagamento.getTipo())) {
+                }
+                pagamentosDatabase.create(pagamento);
+
+                if (pagamento.getTipo() == 1) {
+                    calendario = new Calendario();
+                    calendario.setData(pagamento.getData());
+                    calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
+                    stringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
+                    calendario.setDescricao(stringDescricao);
+                    calendario.setPagamento(pagamento);
+                    calendariosDatabase.create(calendario);
+                } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
-                        stringDescricao += ("valor: " + pagamento.getValor() + "\n tipo: " + pagamento.getTipo() + "\nQtd Parcelas: " + i + " de " + pagamento.getParcela() + "\n");
+                        calendario = new Calendario();
+                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(intervaloPagamento)));
+                        calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
+                        stringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
+                        calendario.setDescricao(stringDescricao);
+                        calendario.setPagamento(pagamento);
+                        calendariosDatabase.create(calendario);
                     }
                 }
 
-                calendario.setDescricao(stringDescricao);
-                calendariosDatabase.create(calendario);
-
-                JOptionPane.showMessageDialog(null, "Evento adicionado com sucesso!\n");
-                return;
-
-                pagamentosDatabase.create(pagamento);
                 JOptionPane.showMessageDialog(null, "Pagamento incluído com sucesso!");
                 return;
 
@@ -913,9 +942,15 @@ public class Controller {
                     return;
                 }
                 pagamento = pagamentosDatabase.getById(Integer.parseInt(idRemover));
+                todosCalendarios = calendariosDatabase.getAll();
                 if (pagamento != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o pagamento com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
+                        for (Calendario c : todosCalendarios){
+                            if (c.getPagamento() == pagamento){
+                                calendariosDatabase.delete(c.getID());
+                            }
+                        }
                         pagamentosDatabase.delete(Integer.parseInt(idRemover));
                         JOptionPane.showMessageDialog(null, "Pagamento removido com sucesso!");
                     } else {
@@ -924,6 +959,7 @@ public class Controller {
                 } else {
                     JOptionPane.showMessageDialog(null, "Pagamento com ID " + idRemover + " não encontrada.");
                 }
+                return;
             case 3:
                 // Visualizar pagamento pelo ID
                 String idVisualizar = JOptionPane.showInputDialog("Digite o ID do Pagamento que deseja visualizar:");

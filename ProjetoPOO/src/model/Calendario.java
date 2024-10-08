@@ -21,6 +21,7 @@ public class Calendario extends Identifiable {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
     private String dataEventoFormat;
+    private Pagamento pagamento;
 
     public Calendario() {
         this.dataCriacao = LocalDateTime.now();
@@ -66,9 +67,28 @@ public class Calendario extends Identifiable {
         this.dataEventoFormat = dataEventoFormat;
     }
 
+    public LocalDate getDataEvento() {
+        return dataEvento;
+    }
+
+    public void setDataEvento(LocalDate dataEvento) {
+        this.dataEvento = dataEvento;
+    }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
+    }
+    
+    
+
     @Override
     public String toString() {
-        return "Calendario{" + "ID=" + super.getID() + "dataEvento=" + dataEvento + ", titulo=" + titulo + ", descricao=" + descricao + ", dataCriacao=" + dataCriacao + ", dataModificacao=" + dataModificacao + '}';
+        return "CALENDARIO => | id = " + super.getID() + " | dataEvento = " + dataEvento + " | titulo = " + titulo + " | descricao = " + descricao 
+                + " | dataCriacao = " + dataCriacao + " | dataModificacao = " + dataModificacao + " | pagamentoId = " + pagamento.getID() + " |";
     }
 
 }
