@@ -797,7 +797,7 @@ public class Controller {
                     return;
                 }
                 pagamento.setTipo(Integer.parseInt(tipo));
-                
+
                 //define a descriçao do pagamento
                 String descricao = JOptionPane.showInputDialog("Digite a descrição do pagamento (Obrigatório mais de 15 caracteres na descrição):");
                 if (!ValidaInput.string(descricao)) {
@@ -822,7 +822,6 @@ public class Controller {
                     return;
                 }
 
-                
                 String stringDescricao = "";
                 String intervaloPagamento = "";
                 if (pagamento.getTipo() == 1) {
@@ -853,7 +852,7 @@ public class Controller {
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
-                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(intervaloPagamento)));
+                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(intervaloPagamento)*(i+1))))));
                         calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                         stringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(stringDescricao);
@@ -896,7 +895,7 @@ public class Controller {
                     return;
                 }
                 pagamento.setValor(Double.parseDouble(novoValorPagamentoFormat));
-                
+
                 String novoTipo = JOptionPane.showInputDialog("Digite o novo tipo do pagamento:\n1 - A VISTA\n2 - PARCELADO", pagamento.getTipo());
                 if (!ValidaInput.string(novoTipo) || !ValidaInput.stringEhInt(novoTipo)) {
                     return;
@@ -906,17 +905,7 @@ public class Controller {
                     return;
                 }
                 pagamento.setTipo(Integer.parseInt(novoTipo));
-                
-                ----até aqui
-                if (pagamento.getTipo() == 1) {
-                    pagamento.setParcela(0);
-                } else {
-                    String novaQtdParc = JOptionPane.showInputDialog("Digite quantas parcelas:", pagamento.getParcela());
-                    if (!ValidaInput.string(novaQtdParc) || !ValidaInput.stringEhInt(novaQtdParc)) {
-                        return;
-                    }
-                    pagamento.setParcela(Integer.parseInt(novaQtdParc));
-                }
+
                 String novaDescricao = JOptionPane.showInputDialog("Digite a descrição do pagamento (Obrigatório mais de 15 caracteres na descrição):", pagamento.getDescricao());
                 if (!ValidaInput.string(novaDescricao)) {
                     return;
@@ -927,7 +916,9 @@ public class Controller {
                 } else {
                     pagamento.setDescricao(novaDescricao);
                 }
-                String novaDataPagamento = JOptionPane.showInputDialog("Digite a nova data do pagamento (dd/mm/yyyy):", pagamento.getData());
+
+                //define a data do pagamento
+                String novaDataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd/mm/yyyy):", pagamento.getData());
                 if (!ValidaInput.string(novaDataPagamento)) {
                     return;
                 }
@@ -938,8 +929,51 @@ public class Controller {
                     return;
                 }
 
+                String novaStringDescricao = "";
+                String novoIntervaloPagamento = "";
+                if (pagamento.getTipo() == 1) {
+                    pagamento.setParcela(0);
+                } else {
+                    //define a quantidade de parcelas
+                    String novoQtdParc = JOptionPane.showInputDialog("Digite quantas parcelas:");
+                    if (!ValidaInput.string(novoQtdParc) || !ValidaInput.stringEhInt(novoQtdParc)) {
+                        return;
+                    }
+                    pagamento.setParcela(Integer.parseInt(novoQtdParc));
+                    novoIntervaloPagamento = JOptionPane.showInputDialog("Digite o intervalo de dias corridos (1 - 30) entre os pagamentos das parcelas:");
+                    if (!ValidaInput.string(novoIntervaloPagamento) || !ValidaInput.stringEhInt(novoIntervaloPagamento)) {
+                        return;
+                    }
+
+                }
+                todosCalendarios = calendariosDatabase.getAll();
+                for (Calendario c : todosCalendarios) {
+                    Pagamento calendarioPagamento = c.getPagamento();
+                    if (calendarioPagamento.getID() == Integer.parseInt(idAlterar)) {
+                        calendariosDatabase.delete(c.getID());
+                    }
+                }
                 pagamento.setDataModificacao();
                 pagamentosDatabase.update(pagamento);
+                if (pagamento.getTipo() == 1) {
+                    calendario = new Calendario();
+                    calendario.setData(pagamento.getData());
+                    calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
+                    novaStringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
+                    calendario.setDescricao(novaStringDescricao);
+                    calendario.setPagamento(pagamento);
+                    calendariosDatabase.create(calendario);
+                } else {
+                    for (int i = 0; i < pagamento.getParcela(); i++) {
+                        calendario = new Calendario();
+                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(novoIntervaloPagamento)*(i+1))))));
+                        calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
+                        novaStringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
+                        calendario.setDescricao(novaStringDescricao);
+                        calendario.setPagamento(pagamento);
+                        calendariosDatabase.create(calendario);
+                    }
+                }
                 JOptionPane.showMessageDialog(null, "Pagamento atualizado com sucesso!");
                 return;
 
@@ -953,8 +987,8 @@ public class Controller {
                 if (pagamento != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o pagamento com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
-                        for (Calendario c : todosCalendarios){
-                            if (c.getPagamento() == pagamento){
+                        for (Calendario c : todosCalendarios) {
+                            if (c.getPagamento() == pagamento) {
                                 calendariosDatabase.delete(c.getID());
                             }
                         }
