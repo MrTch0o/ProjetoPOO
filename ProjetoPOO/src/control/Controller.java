@@ -896,11 +896,18 @@ public class Controller {
                     return;
                 }
                 pagamento.setValor(Double.parseDouble(novoValorPagamentoFormat));
+                
                 String novoTipo = JOptionPane.showInputDialog("Digite o novo tipo do pagamento:\n1 - A VISTA\n2 - PARCELADO", pagamento.getTipo());
                 if (!ValidaInput.string(novoTipo) || !ValidaInput.stringEhInt(novoTipo)) {
                     return;
                 }
+                if (!("1".equals(novoTipo) || "2".equals(novoTipo))) {
+                    JOptionPane.showMessageDialog(null, "Digite o tipo do pagamento:\n1 - A VISTA\n2 - PARCELADO");
+                    return;
+                }
                 pagamento.setTipo(Integer.parseInt(novoTipo));
+                
+                ----até aqui
                 if (pagamento.getTipo() == 1) {
                     pagamento.setParcela(0);
                 } else {
