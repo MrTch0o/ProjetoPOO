@@ -1181,3 +1181,4 @@ public class Controller {
         }
     }
 }
+//terminado menu administrador
