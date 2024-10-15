@@ -1181,4 +1181,4 @@ public class Controller {
         }
     }
 }
-//terminado menu administrador
+//terminado menu administradors
