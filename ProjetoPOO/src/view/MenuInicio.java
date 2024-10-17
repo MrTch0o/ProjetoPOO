@@ -37,7 +37,7 @@ public class MenuInicio {
     }
 
     public int menuUsuario() {
-        String[] opcoes = {"Incluir Usuario", "Alterar Usuario", "Remover Usuario", "Visualizar Usuario", "Visualizar Todos Usuarios", "Voltar"};
+        String[] opcoes = {"Incluir Usuario\n", "Alterar Usuario", "Remover Usuario", "Visualizar Usuario", "Visualizar Todos Usuarios", "Voltar"};
         int escolha = JOptionPane.showOptionDialog(null, "Menu Usuario", "Usuários", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
         return escolha;
@@ -56,6 +56,14 @@ public class MenuInicio {
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
         return escolha;
     }
+    
+      public int menuGerenciarPresentes() {
+        String[] opcoes = {"Incluir Presente", "Alterar Presente", "Remover Presente", "Visualizar Presentes Cadastrados", "Visualizar Presentes Recebidos", "Voltar"};
+        int escolha = JOptionPane.showOptionDialog(null, "Gerenciar Presentes", "Presentes", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+        return escolha;
+    }
+    
 
     public int menuGerenciarPagamentos() {
         String[] opcoes = {"Incluir Pagamento", "Alterar Pagamento", "Remover Pagamento", "Verificar Pagamentos ID", "Verificar Todos os Pagamentos", "Voltar"};
@@ -65,11 +73,11 @@ public class MenuInicio {
     }
 
     public int menuGerenciarCalendario() {
- 
-            String[] opcoes = {"Adicionar Evento", "Alterar Evento", "Remover Evento", "Visualizar Eventos Hoje", "Visualizar Calendário", "Voltar"};
-            int escolha = JOptionPane.showOptionDialog(null, "Gerenciamento de Calendário", "Calendário", JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
-            return escolha;
+
+        String[] opcoes = {"Adicionar Evento", "Alterar Evento", "Remover Evento", "Visualizar Eventos Hoje", "Visualizar Calendário", "Voltar"};
+        int escolha = JOptionPane.showOptionDialog(null, "Gerenciamento de Calendário", "Calendário", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+        return escolha;
 
     }
 //FIM MENU ADMINISTRADOR
@@ -85,75 +93,25 @@ public class MenuInicio {
     }
 
     // Menu de Presentes para Convidado
-    public void menuPresentesConvidado() {
+    public int menuPresentesConvidado() {
         String[] opcoes = {"Dar Presente", "Ver Presentes", "Voltar"};
         int escolha = JOptionPane.showOptionDialog(null, "Menu Presentes", "Presentes", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
 
-        switch (escolha) {
-            case 0:
-                JOptionPane.showMessageDialog(null, "Dando presente.");
-                // Função de dar presente aqui
-                break;
-            case 1:
-                JOptionPane.showMessageDialog(null, "Exibindo lista de presentes.");
-                // Função de exibição de presentes aqui
-                break;
-            case 2:
-                return; // Volta ao menu anterior
-            default:
-                JOptionPane.showMessageDialog(null, "Opção inválida.");
-        }
+        return escolha;
     }
 
     // Menu de Recados para Convidado
-    public void menuRecadosConvidado() {
+    public int menuRecadosConvidado() {
         String[] opcoes = {"Ver Recados", "Deixar Recado", "Voltar"};
         int escolha = JOptionPane.showOptionDialog(null, "Menu Recados", "Recados", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
 
-        switch (escolha) {
-            case 0:
-                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
-                // Função de exibição de recados
-                break;
-            case 1:
-                deixarRecadoLogado();
-                break;
-            case 2:
-                return; // Volta ao menu anterior
-            default:
-                JOptionPane.showMessageDialog(null, "Opção inválida.");
-        }
+        return escolha;
     }
-
-    // Deixar Recado no Menu Logado
-    public void deixarRecadoLogado() {
-        String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
-        String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
-                "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
-
-        if (recado.length() > 4000) {
-            recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
-        }
-
-        JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
-        // Lógica para armazenar o recado
-    }
-
-    // Método de Confirmar Presença
-    public void confirmarPresenca() {
-        String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
-
-        if (idConvidado != null && !idConvidado.isEmpty()) {
-            // Lógica para confirmar presença (armazenar ou marcar a presença)
-            JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + idConvidado);
-        } else {
-            JOptionPane.showMessageDialog(null, "ID do convidado inválido. Tente novamente.");
-        }
-    }
-//FIM MENU CONVIDADO   
-
+    
+//FIM MENU CONVIDADO
+    
 //INICIO MENU NAO LOGADO
     public void menuNaoLogado() {
         while (true) {

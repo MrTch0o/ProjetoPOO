@@ -51,7 +51,7 @@ public class Controller {
     Gerador gerador = new Gerador();
 
     public void main(String[] args) {
-        while (true) {
+        while (controlForm) {
             escolha = menuInicio.menuInicial(); // Chamando o menu inicial
             if (escolha == 3 || escolha == -1) {
                 escolha = 3;
@@ -64,7 +64,7 @@ public class Controller {
                         perfilLogin(escolhaPerfil);
                     }
                     controlForm = true;
-                    return;
+                    break;
                 case 1: // Entrar sem Registrar
                     menuInicio.menuNaoLogado();
                     return;
@@ -75,7 +75,7 @@ public class Controller {
                 case 3: // Sair
                     JOptionPane.showMessageDialog(null, "Saindo do sistema.");
                     System.exit(0); // Finaliza o programa
-                    return;
+                //return;
             }
         }
     }
@@ -116,8 +116,11 @@ public class Controller {
                     return;
                 case 1:
                     if ("convidado".equals(login) && "convidado".equals(senha)) {
-                        int escolhaConvidado = menuInicio.menuConvidado();
-                        perfilConvidado(escolhaConvidado);
+                        while (controlForm) {
+                            int escolhaConvidado = menuInicio.menuConvidado();
+                            perfilConvidado(escolhaConvidado);
+                        }
+                        controlForm = true;
                         return;
                     } else {
                         JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Convidado.");
@@ -127,6 +130,7 @@ public class Controller {
         }
     }
 
+//INICIO MENU ADMINISTRADOR
     public void perfilAdm(int escolhaAdm) {
         if (escolhaAdm == 6 || escolhaAdm == -1) {
             controlForm = false;
@@ -852,7 +856,7 @@ public class Controller {
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
-                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(intervaloPagamento)*(i+1))))));
+                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(intervaloPagamento) * (i + 1))))));
                         calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                         stringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(stringDescricao);
@@ -966,7 +970,7 @@ public class Controller {
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
-                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(novoIntervaloPagamento)*(i+1))))));
+                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(novoIntervaloPagamento) * (i + 1))))));
                         calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                         novaStringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(novaStringDescricao);
@@ -1161,24 +1165,144 @@ public class Controller {
                 }
         }
     }
+//FIM MENU ADMINISTRADOR
 
+//INICIO MENU CONVIDADO
     public void perfilConvidado(int escolhaConvidado) {
         if (escolhaConvidado == 3 || escolhaConvidado == -1) {
+            controlForm = false;
             return;
         }
-        while (true) {
+        while (controlForm) {
             switch (escolhaConvidado) {
                 case 0:
-                    menuInicio.menuPresentesConvidado();
+                    while (controlForm) {
+                        int escolhaPresenteConvidado = menuInicio.menuPresentesConvidado();
+                        perfilPresenteConvidado(escolhaPresenteConvidado);
+                    }
+                    controlForm = true;
                     return;
                 case 1:
-                    menuInicio.menuRecadosConvidado();
+                    while (controlForm) {
+                        int escolhaRecadoConvidado = menuInicio.menuRecadosConvidado();
+                        perfilRecadoConvidado(escolhaRecadoConvidado);
+                    }
+                    controlForm = true;
                     return;
                 case 2:
-                    menuInicio.confirmarPresenca();
+                    // Método de Confirmar Presença
+                    String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
+
+                    if (idConvidado != null && !idConvidado.isEmpty()) {
+                        // Lógica para confirmar presença (armazenar ou marcar a presença)
+                        JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + idConvidado);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "ID do convidado inválido. Tente novamente.");
+                    }
                     return;
             }
         }
     }
+
+    /* public void perfilPresenteConvidado(int escolhaPresenteConvidado) {
+        if (escolhaPresenteConvidado == 2 || escolhaPresenteConvidado == -1) {
+            controlForm = false;
+            return;
+        }
+        switch (escolhaPresenteConvidado) {
+            case 0:
+                JOptionPane.showMessageDialog(null, "Dando presente.");
+                // Função de dar presente aqui
+                return;
+            case 1:
+                JOptionPane.showMessageDialog(null, "Exibindo lista de presentes.");
+                // Função de exibição de presentes aqui
+                return;
+        }
+    }
+     */
+    public void perfilPresenteConvidado(int escolhaPresenteConvidado) {
+        if (escolhaPresenteConvidado == 2 || escolhaPresenteConvidado == -1) {
+            controlForm = false; // Volta ao menu de convidados
+            return;
+        }
+
+        switch (escolhaPresenteConvidado) {
+            case 0: // Dar presente
+                while (true) {
+                    // Exibe a lista de presentes
+                    String listaPresentes = gerador.getListaPresentes();
+                    String escolha = JOptionPane.showInputDialog(null, listaPresentes + "\nEscolha o número do presente que deseja dar:");
+
+                    if (escolha == null || !ValidaInput.stringEhInt(escolha)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+
+                    int numeroPresente = Integer.parseInt(escolha) - 1;
+                    if (numeroPresente < 0 || numeroPresente >= Gerador.PRESENTES.length) {
+                        JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
+                        continue;
+                    }
+
+                    // Solicita quantas cotas o usuário deseja dar
+                    String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
+                    if (cotas == null || !ValidaInput.stringEhInt(cotas)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+
+                    int cotasInt = Integer.parseInt(cotas);
+                    int cotasDisponiveis = gerador.getCotasDisponiveis(numeroPresente);
+
+                    // Confirmação
+                    int confirmacao = JOptionPane.showConfirmDialog(null,
+                            "Você escolheu dar " + cotasInt + " cotas para " + gerador.PRESENTES[numeroPresente]
+                            + "\nCotas disponíveis: " + cotasDisponiveis + "\nConfirmar?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacao == JOptionPane.YES_OPTION) {
+                        // Tenta dar o presente
+                        boolean sucesso = gerador.darPresente(numeroPresente, cotasInt);
+                        if (sucesso) {
+                            JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Cotas insuficientes! Tente novamente.");
+                        }
+                    }
+
+                    // Exibe a lista atualizada de presentes
+//                    listaPresentes = gerador.getListaPresentes();
+//                    JOptionPane.showMessageDialog(null, listaPresentes);
+                    return;
+                }
+
+            case 1: // Ver presentes
+                JOptionPane.showMessageDialog(null, gerador.getListaPresentes());
+                return;
+        }
+    }
+
+    public void perfilRecadoConvidado(int escolhaRecadoConvidado) {
+        if (escolhaRecadoConvidado == 2 || escolhaRecadoConvidado == -1) {
+            controlForm = false;
+            return;
+        }
+        switch (escolha) {
+            case 0:
+                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
+                // Função de exibição de recados
+                return;
+            case 1:// Deixar Recado no Menu Logado
+                String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
+                String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
+                        "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
+
+                if (recado.length() > 4000) {
+                    recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
+                }
+                // Lógica para armazenar o recado
+                JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
+
+                return;
+        }
+    }
+//FIM MENU CONVIDADO
 }
-//terminado menu administradors
