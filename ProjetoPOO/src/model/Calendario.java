@@ -14,7 +14,7 @@ import model.dao.Utils;
  * @author DEVENG
  */
 public class Calendario extends Identifiable {
-
+    Utils utils = new Utils();
     private LocalDate dataEvento;
     private String titulo;
     private String descricao;
@@ -87,7 +87,7 @@ public class Calendario extends Identifiable {
 
     @Override
     public String toString() {
-        return "CALENDARIO => | id = " + super.getID() + " | dataEvento = " + dataEvento + " | titulo = " + titulo + " | descricao = " + descricao 
+        return "CALENDARIO => | id = " + super.getID() + " | dataEvento = " + utils.formatDateToString(dataEvento) + " | titulo = " + titulo + " | descricao = " + descricao 
                 + " | dataCriacao = " + dataCriacao + " | dataModificacao = " + dataModificacao + " | pagamentoId = " + pagamento.getID() + " |";
     }
 

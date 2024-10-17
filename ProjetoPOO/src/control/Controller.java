@@ -244,7 +244,7 @@ public class Controller {
                     pessoa.setTelefone(novoTelefone);
 
                     // Alterar data de nascimento
-                    String novoNascimento = JOptionPane.showInputDialog("Digite a nova data de nascimento (dd/MM/yyyy):", pessoa.getNascimento().toString());
+                    String novoNascimento = JOptionPane.showInputDialog("Digite a nova data de nascimento (dd/MM/yyyy):", utils.formatDateToString(pessoa.getNascimento()));
                     if (!ValidaInput.string(novoNascimento)) {
                         return; // Volta ao menu se cancelar ou fechar
                     }

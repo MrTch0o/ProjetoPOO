@@ -7,13 +7,14 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import model.dao.Identifiable;
+import model.dao.Utils;
 
 /**
  *
  * @author Gabriel
  */
 public class Pagamento extends Identifiable {
-
+    Utils utils = new Utils();
     private LocalDate data;
     private Fornecedor fornecedor;
     private double valor;
@@ -91,7 +92,7 @@ public class Pagamento extends Identifiable {
 
     @Override
     public String toString() {
-        return "PAGAMENTO => | id = "+super.getID() + " | data = " + data + " | valor = " + valor + " | tipo = " + tipo + " | parcela = " + parcela + 
+        return "PAGAMENTO => | id = "+super.getID() + " | data = " + utils.formatDateToString(data) + " | valor = " + valor + " | tipo = " + tipo + " | parcela = " + parcela + 
                 " | descricao = " + descricao + " | dataCriacao = " + dataCriacao + " | dataModificacao=" + dataModificacao + "\n" +
                 " | "+ fornecedor.toString();
     }

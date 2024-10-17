@@ -70,7 +70,7 @@ public class Fornecedor extends Identifiable {
 
     @Override
     public String toString() {
-        return "FORNECEDOR => | id = " + getID() + " | razaoSocial = " + razaoSocial + " | cpfCnpj = " + cpfCnpj + " | telefone = " + telefone 
+        return "FORNECEDOR => | id = " + super.getID() + " | razaoSocial = " + razaoSocial + " | cpfCnpj = " + cpfCnpj + " | telefone = " + telefone 
                 + " | dataCriacao = " + dataCriacao + " | dataModificacao = " + dataModificacao + " | pessoaId = " + pessoa.getID() + " |";
     }
     

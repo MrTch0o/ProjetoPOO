@@ -7,13 +7,14 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import model.dao.Identifiable;
+import model.dao.Utils;
 
 /**
  *
  * @author Gabriel
  */
 public class Pessoa extends Identifiable {
-
+    Utils utils = new Utils();
     private String nome;
     private LocalDate nascimento;
     private String telefone;
@@ -62,7 +63,7 @@ public class Pessoa extends Identifiable {
 
     @Override
     public String toString() {
-        return "PESSOA => | id = " + super.getID() + " | nome = " + nome + " | nascimento = " + nascimento + " | telefone = " + telefone + " | dataCriacao = " + dataCriacao 
+        return "PESSOA => | id = " + super.getID() + " | nome = " + nome + " | nascimento = " + utils.formatDateToString(nascimento) + " | telefone = " + telefone + " | dataCriacao = " + dataCriacao 
                 + " | dataModificacao = " + dataModificacao + " |";
     }
 

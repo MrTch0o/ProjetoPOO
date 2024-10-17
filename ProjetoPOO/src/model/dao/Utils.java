@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+
 /**
  *
  * @author IFTM
@@ -16,7 +17,6 @@ public class Utils extends Identifiable{
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     LocalDate data;
-    
 
     //formato dd-MM-yy
     public LocalDate formatDate(String data) throws Exception {
