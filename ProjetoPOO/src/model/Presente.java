@@ -14,7 +14,7 @@ import model.dao.Identifiable;
 public class Presente extends Identifiable {
 
     private String nome;
-    private String cotas;
+    private int cotas;
     private double valor;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
@@ -31,11 +31,11 @@ public class Presente extends Identifiable {
         return this.nome;
     }
 
-    public String getCotas() {
+    public int getCotas() {
         return cotas;
     }
 
-    public void setCotas(String cotas) {
+    public void setCotas(int cotas) {
         this.cotas = cotas;
     }
 

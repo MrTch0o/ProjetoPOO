@@ -13,13 +13,13 @@ import java.util.Random;
 public class Gerador {
 
     // Arrays de nomes, telefones e datas de nascimento
-    private static final String[] NOMES = {
+    private final String[] NOMES = {
         "Ana", "Beatriz", "Carlos", "Daniel", "Eduardo", "Fernanda", "Gabriel",
         "Heloisa", "Isabela", "João", "Karen", "Lucas", "Mariana", "Nathalia",
         "Otávio", "Paula", "Ricardo", "Sofia", "Tiago", "Vinícius"
     };
 
-    private static final String[] TELEFONES = {
+    private final String[] TELEFONES = {
         "(11) 91234-5678", "(21) 99876-5432", "(31) 98765-4321", "(41) 99812-3456",
         "(51) 99765-4321", "(61) 91234-8765", "(71) 99876-5432", "(81) 98712-3456",
         "(91) 99765-8765", "(22) 91123-4567", "(32) 99871-2345", "(42) 98761-2345",
@@ -27,7 +27,7 @@ public class Gerador {
         "(92) 91123-1111", "(33) 99876-1111", "(43) 98765-2222", "(53) 91234-2222"
     };
 
-    private static final String[] DATAS_NASCIMENTO = {
+    private final String[] DATAS_NASCIMENTO = {
         "01/01/1990", "02/02/1985", "03/03/1978", "04/04/2000", "05/05/1995",
         "06/06/1992", "07/07/1988", "08/08/1991", "09/09/1999", "10/10/1983",
         "11/11/1994", "12/12/1987", "13/01/1990", "14/02/1985", "15/03/1978",
@@ -35,7 +35,7 @@ public class Gerador {
     };
 
     // Objeto Random para gerar números aleatórios
-    private static final Random RANDOM = new Random();
+    private final Random RANDOM = new Random();
 
     // Método que gera um nome aleatório com base em um índice
     public String gerarNome() {
@@ -67,7 +67,7 @@ public class Gerador {
     }
      */
     // Lista de presentes, suas cotas e valores estimados
-    static final String[] PRESENTES = {
+    private static final String[] PRESENTES = {
         "Jogo de Panelas", "Conjunto de Copos", "Aparelho de Jantar", "Churrasqueira", "Batedeira",
         "Grill Elétrico", "Cafeteira", "Micro-ondas", "Liquidificador", "Torradeira",
         "Frigideira", "Panela de Pressão", "Assadeira", "Conjunto de Facas", "Espremedor de Frutas",
@@ -86,7 +86,24 @@ public class Gerador {
         300.00, 150.00, 500.00, 400.00, 200.00, 250.00, 180.00, 600.00, 120.00, 100.00,
         80.00, 90.00, 60.00, 110.00, 70.00, 150.00, 1200.00, 300.00, 150.00, 50.00,
         40.00, 100.00, 400.00, 200.00, 1500.00, 250.00, 1600.00, 2000.00, 1200.00, 3000.00
-    }; // Valores estimados para cada presente
+    }; //Valores estimados para cada presente
+
+    public int getIndicePresente() {
+        int indiceAleatorio = RANDOM.nextInt(PRESENTES.length);
+        return indiceAleatorio;
+    }
+    
+    public String getPresente(int indice) {
+        return PRESENTES[indice];
+    }
+
+    public int getCota(int indice) {
+        return COTAS[indice];
+    }
+
+    public double getValorEstimado(int indice) {
+        return VALORES_ESTIMADOS[indice];
+    }
 
     // Método para exibir a lista de presentes com cotas e valores de 5 em 5
     public String getListaPresentes() {

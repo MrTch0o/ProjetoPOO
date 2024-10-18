@@ -13,6 +13,8 @@ import model.Convidado;
 import model.Familia;
 import model.Pagamento;
 import model.Calendario;
+import model.Presente;
+import model.PresenteRecebido;
 import model.dao.Database;
 import model.dao.Utils;
 import view.MenuInicio;
@@ -35,18 +37,24 @@ public class Controller {
     Familia familia;
     Pagamento pagamento;
     Calendario calendario;
+    Presente presente;
+    PresenteRecebido presenteRecebido;
     Pessoa[] todasPessoas;
     Usuario[] todosUsuarios;
     Fornecedor[] todosFornecedores;
     Convidado[] todosConvidados;
     Pagamento[] todosPagamentos;
     Calendario[] todosCalendarios;
+    Presente[] todosPresente;
+    PresenteRecebido[] todosPresenteRecebido;
     Database<Pessoa> pessoasDatabase = new Database<>(new Pessoa[0]);
     Database<Usuario> usuariosDatabase = new Database<>(new Usuario[0]);
     Database<Fornecedor> fornecedoresDatabase = new Database<>(new Fornecedor[0]);
     Database<Convidado> convidadosDatabase = new Database<>(new Convidado[0]);
     Database<Pagamento> pagamentosDatabase = new Database<>(new Pagamento[0]);
     Database<Calendario> calendariosDatabase = new Database<>(new Calendario[0]);
+    Database<Presente> presentesDatabase = new Database<>(new Presente[0]);
+    Database<PresenteRecebido> presentesRecebidosDatabase = new Database<>(new PresenteRecebido[0]);
     Utils utils = new Utils();
     Gerador gerador = new Gerador();
 
@@ -132,7 +140,7 @@ public class Controller {
 
 //INICIO MENU ADMINISTRADOR
     public void perfilAdm(int escolhaAdm) {
-        if (escolhaAdm == 6 || escolhaAdm == -1) {
+        if (escolhaAdm == 7 || escolhaAdm == -1) {
             controlForm = false;
             return;
         }
@@ -169,13 +177,21 @@ public class Controller {
                     return;
                 case 4:
                     while (controlForm) {
+                        int escolhaPresente = menuInicio.menuGerenciarPresentes();
+                        perfilGerenciarPresente(escolhaPresente);
+
+                    }
+                    controlForm = true;
+                    return;
+                case 5:
+                    while (controlForm) {
                         int escolhaPagamento = menuInicio.menuGerenciarPagamentos();
                         perfilGerenciarPagamento(escolhaPagamento);
 
                     }
                     controlForm = true;
                     return;
-                case 5:
+                case 6:
                     while (controlForm) {
                         int escolhaCalendario = menuInicio.menuGerenciarCalendario();
                         perfilGerenciarCalendario(escolhaCalendario);
@@ -755,6 +771,51 @@ public class Controller {
         }
     }
 
+    public void perfilGerenciarPresente(int escolhaPresente) {
+        if (escolhaPresente == 5 || escolhaPresente == -1) {
+            controlForm = false;
+            return;
+        }
+        switch (escolhaPresente) {
+
+            case 0: // Incluir Presente
+                presente = new Presente();
+                int indicePresente = gerador.getIndicePresente();
+
+                String nomePresente = JOptionPane.showInputDialog("Digite o nome do presente:", gerador.getPresente(indicePresente));
+                if (!ValidaInput.string(nomePresente)) {
+                    return; // Volta ao menu se cancelar ou fechar
+                }
+                presente.setNome(nomePresente);
+
+                String valorEstimado = String.format("%.2f", gerador.getValorEstimado(indicePresente));
+                String valorPresente = JOptionPane.showInputDialog("Digite o valor do presente:", valorEstimado);
+                if (!ValidaInput.string(valorPresente) || !ValidaInput.stringEhDouble(valorPresente)) {
+                    return; // Volta ao menu se cancelar ou fechar
+                }
+                String valorPresenteFormat = Utils.formatDouble(valorPresente);
+                if (!ValidaInput.string(valorPresenteFormat)) { // Verifica se contem somente numero na string com virgula
+                    return;
+                }
+                presente.setValor(Double.parseDouble(valorPresenteFormat));
+
+                String cotasPresente = JOptionPane.showInputDialog("Digite quantas cotas terá o presente:", gerador.getCota(indicePresente));
+                if (!ValidaInput.string(cotasPresente) || !ValidaInput.stringEhInt(cotasPresente)) {
+                    return; // Volta ao menu se cancelar ou fechar
+                }
+                presente.setCotas(Integer.parseInt(cotasPresente));
+
+                // Adiciona ao banco de dados (ou lista)
+                presentesDatabase.create(presente);
+                JOptionPane.showMessageDialog(null, "Presente incluído com sucesso!");
+
+                return;
+            case 1:
+                return;
+        }
+
+    }
+
     public void perfilGerenciarPagamento(int escolhaPagamento) {
         if (escolhaPagamento == 5 || escolhaPagamento == -1) {
             controlForm = false;
@@ -1204,23 +1265,6 @@ public class Controller {
         }
     }
 
-    /* public void perfilPresenteConvidado(int escolhaPresenteConvidado) {
-        if (escolhaPresenteConvidado == 2 || escolhaPresenteConvidado == -1) {
-            controlForm = false;
-            return;
-        }
-        switch (escolhaPresenteConvidado) {
-            case 0:
-                JOptionPane.showMessageDialog(null, "Dando presente.");
-                // Função de dar presente aqui
-                return;
-            case 1:
-                JOptionPane.showMessageDialog(null, "Exibindo lista de presentes.");
-                // Função de exibição de presentes aqui
-                return;
-        }
-    }
-     */
     public void perfilPresenteConvidado(int escolhaPresenteConvidado) {
         if (escolhaPresenteConvidado == 2 || escolhaPresenteConvidado == -1) {
             controlForm = false; // Volta ao menu de convidados
@@ -1229,50 +1273,49 @@ public class Controller {
 
         switch (escolhaPresenteConvidado) {
             case 0: // Dar presente
-                while (true) {
-                    // Exibe a lista de presentes
-                    String listaPresentes = gerador.getListaPresentes();
-                    String escolha = JOptionPane.showInputDialog(null, listaPresentes + "\nEscolha o número do presente que deseja dar:");
-
-                    if (escolha == null || !ValidaInput.stringEhInt(escolha)) {
-                        return; // Volta ao menu se cancelar ou fechar
-                    }
-
-                    int numeroPresente = Integer.parseInt(escolha) - 1;
-                    if (numeroPresente < 0 || numeroPresente >= Gerador.PRESENTES.length) {
-                        JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
-                        continue;
-                    }
-
-                    // Solicita quantas cotas o usuário deseja dar
-                    String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
-                    if (cotas == null || !ValidaInput.stringEhInt(cotas)) {
-                        return; // Volta ao menu se cancelar ou fechar
-                    }
-
-                    int cotasInt = Integer.parseInt(cotas);
-                    int cotasDisponiveis = gerador.getCotasDisponiveis(numeroPresente);
-
-                    // Confirmação
-                    int confirmacao = JOptionPane.showConfirmDialog(null,
-                            "Você escolheu dar " + cotasInt + " cotas para " + gerador.PRESENTES[numeroPresente]
-                            + "\nCotas disponíveis: " + cotasDisponiveis + "\nConfirmar?", "Confirmar", JOptionPane.YES_NO_OPTION);
-
-                    if (confirmacao == JOptionPane.YES_OPTION) {
-                        // Tenta dar o presente
-                        boolean sucesso = gerador.darPresente(numeroPresente, cotasInt);
-                        if (sucesso) {
-                            JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Cotas insuficientes! Tente novamente.");
-                        }
-                    }
-
-                    // Exibe a lista atualizada de presentes
-//                    listaPresentes = gerador.getListaPresentes();
-//                    JOptionPane.showMessageDialog(null, listaPresentes);
-                    return;
-                }
+//                while (true) {
+//                    // Exibe a lista de presentes
+//                    String listaPresentes = gerador.getListaPresentes();
+//                    String escolha = JOptionPane.showInputDialog(null, listaPresentes + "\nEscolha o número do presente que deseja dar:");
+//
+//                    if (escolha == null || !ValidaInput.stringEhInt(escolha)) {
+//                        return; // Volta ao menu se cancelar ou fechar
+//                    }
+//
+//                    int numeroPresente = Integer.parseInt(escolha) - 1;
+//                    if (numeroPresente < 0 || numeroPresente >= gerador.PRESENTES.length) {
+//                        JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
+//                        continue;
+//                    }
+//
+//                    // Solicita quantas cotas o usuário deseja dar
+//                    String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
+//                    if (cotas == null || !ValidaInput.stringEhInt(cotas)) {
+//                        return; // Volta ao menu se cancelar ou fechar
+//                    }
+//
+//                    int cotasInt = Integer.parseInt(cotas);
+//                    int cotasDisponiveis = gerador.getCotasDisponiveis(numeroPresente);
+//
+//                    // Confirmação
+//                    int confirmacao = JOptionPane.showConfirmDialog(null,
+//                            "Você escolheu dar " + cotasInt + " cotas para " + gerador.PRESENTES[numeroPresente]
+//                            + "\nCotas disponíveis: " + cotasDisponiveis + "\nConfirmar?", "Confirmar", JOptionPane.YES_NO_OPTION);
+//
+//                    if (confirmacao == JOptionPane.YES_OPTION) {
+//                        // Tenta dar o presente
+//                        boolean sucesso = gerador.darPresente(numeroPresente, cotasInt);
+//                        if (sucesso) {
+//                            JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
+//                        } else {
+//                            JOptionPane.showMessageDialog(null, "Cotas insuficientes! Tente novamente.");
+//                        }
+//                    }
+//
+//                    // Exibe a lista atualizada de presentes
+////                    listaPresentes = gerador.getListaPresentes();
+////                    JOptionPane.showMessageDialog(null, listaPresentes);
+                return;
 
             case 1: // Ver presentes
                 JOptionPane.showMessageDialog(null, gerador.getListaPresentes());

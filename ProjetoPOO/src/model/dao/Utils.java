@@ -27,7 +27,7 @@ public class Utils extends Identifiable{
     public String formatDateToString(LocalDate data){
         return data.format(formatter);
     }
-
+    
     // Valida se a string contém apenas números e uma única vírgula
     public static String formatDouble(String input) {
         // Se contém vírgula, devemos garantir que haja duas casas decimais

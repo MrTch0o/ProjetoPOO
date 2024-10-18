@@ -5,12 +5,13 @@
 package model;
 
 import java.time.LocalDateTime;
+import model.dao.Identifiable;
 
 /**
  *
  * @author DEVENG
  */
-public class PresenteRecebido {
+public class PresenteRecebido extends Identifiable{
 
     private Presente presente;
     private Pessoa pessoa;
