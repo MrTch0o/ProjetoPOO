@@ -813,7 +813,6 @@ public class Controller {
             case 1:
                 return;
         }
-
     }
 
     public void perfilGerenciarPagamento(int escolhaPagamento) {
