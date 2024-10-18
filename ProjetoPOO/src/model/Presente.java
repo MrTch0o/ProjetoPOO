@@ -16,6 +16,7 @@ public class Presente extends Identifiable {
     private String nome;
     private int cotas;
     private double valor;
+    private double valorCota;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
@@ -47,6 +48,14 @@ public class Presente extends Identifiable {
         return this.valor;
     }
 
+    public double getValorCota() {
+        return valorCota;
+    }
+
+    public void setValorCota(double valorCota) {
+        this.valorCota = valorCota;
+    }
+
     public LocalDateTime getDataCriacao() {
         return this.dataCriacao;
     }
@@ -59,9 +68,25 @@ public class Presente extends Identifiable {
         return this.dataModificacao;
     }
     
+    
+    public String toStringConvidado(){
+        
+        return  (super.getID()
+                +"."
+                +nome
+                +" - Valor estimado: R$"
+                +String.format("%.2f", valor)
+                +" - Valor da cota: R$"
+                +String.format("%.2f", valorCota)
+                +" - Cotas restantes: "
+                +cotas);
+    }
+
+    
+    
     @Override
     public String toString() {
-        return "Presentes{" + "nome=" + nome + ", cotas=" + cotas + ", valor=" + valor + ", dataCriacao=" + dataCriacao + ", dataModificacao=" + dataModificacao + '}';
+        return "PRESENTE => | ID: " + super.getID() + " | NOME: " + nome + " | VALOR: " + String.format("%.2f", valor) + " | COTAS: " + cotas + "| VALOR COTA: " + String.format("%.2f", valorCota) + "| DC: " + dataCriacao + " | DM: " + dataModificacao + " |";
     }
     
 }

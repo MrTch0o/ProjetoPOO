@@ -19,11 +19,6 @@ import model.dao.Database;
 import model.dao.Utils;
 import view.MenuInicio;
 
-/**
- * ctrl+j e ctrl+alt+shift+j testesteste
- *
- * @author Gabriel
- */
 public class Controller {
 
     boolean controlForm = true; //Variavel para controle de Form;
@@ -45,8 +40,8 @@ public class Controller {
     Convidado[] todosConvidados;
     Pagamento[] todosPagamentos;
     Calendario[] todosCalendarios;
-    Presente[] todosPresente;
-    PresenteRecebido[] todosPresenteRecebido;
+    Presente[] todosPresentes;
+    PresenteRecebido[] todosPresentesRecebido;
     Database<Pessoa> pessoasDatabase = new Database<>(new Pessoa[0]);
     Database<Usuario> usuariosDatabase = new Database<>(new Usuario[0]);
     Database<Fornecedor> fornecedoresDatabase = new Database<>(new Fornecedor[0]);
@@ -60,30 +55,29 @@ public class Controller {
 
     public void main(String[] args) {
         while (controlForm) {
-            escolha = menuInicio.menuInicial(); // Chamando o menu inicial
+            escolha = menuInicio.menuInicial();
             if (escolha == 3 || escolha == -1) {
                 escolha = 3;
             }
 
             switch (escolha) {
-                case 0: // Login
+                case 0:
                     while (controlForm) {
                         int escolhaPerfil = menuInicio.menuLogin();
                         perfilLogin(escolhaPerfil);
                     }
                     controlForm = true;
                     break;
-                case 1: // Entrar sem Registrar
+                case 1:
                     menuInicio.menuNaoLogado();
                     return;
-                case 2: // Registrar
+                case 2:
                     JOptionPane.showMessageDialog(null, "Funcionalidade de Registro.");
                     // Função de registro aqui
                     return;
-                case 3: // Sair
+                case 3:
                     JOptionPane.showMessageDialog(null, "Saindo do sistema.");
-                    System.exit(0); // Finaliza o programa
-                //return;
+                    System.exit(0);
             }
         }
     }
@@ -793,10 +787,12 @@ public class Controller {
                 if (!ValidaInput.string(valorPresente) || !ValidaInput.stringEhDouble(valorPresente)) {
                     return; // Volta ao menu se cancelar ou fechar
                 }
+//                System.out.println(valorPresente);
                 String valorPresenteFormat = Utils.formatDouble(valorPresente);
-                if (!ValidaInput.string(valorPresenteFormat)) { // Verifica se contem somente numero na string com virgula
-                    return;
-                }
+//                System.out.println(valorPresenteFormat);
+//                if (!ValidaInput.string(valorPresenteFormat)) { // Verifica se contem somente numero na string com virgula
+//                    return;
+//                }
                 presente.setValor(Double.parseDouble(valorPresenteFormat));
 
                 String cotasPresente = JOptionPane.showInputDialog("Digite quantas cotas terá o presente:", gerador.getCota(indicePresente));
@@ -804,13 +800,95 @@ public class Controller {
                     return; // Volta ao menu se cancelar ou fechar
                 }
                 presente.setCotas(Integer.parseInt(cotasPresente));
+                double valorCota = presente.getValor() / (double) Integer.parseInt(cotasPresente);
+                presente.setValorCota(valorCota);
 
                 // Adiciona ao banco de dados (ou lista)
                 presentesDatabase.create(presente);
                 JOptionPane.showMessageDialog(null, "Presente incluído com sucesso!");
 
                 return;
-            case 1:
+
+            case 1: //alterar presente
+                String idAlterar = JOptionPane.showInputDialog("Digite o ID do presente que deseja alterar:");
+                if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) {
+                    return;
+                }
+
+                presente = presentesDatabase.getById(Integer.parseInt(idAlterar));
+                if (presente != null) {
+                    String novoNome = JOptionPane.showInputDialog("Digite o novo nome:", presente.getNome());
+                    if (!ValidaInput.string(novoNome)) {
+                        return;
+                    }
+                    presente.setNome(novoNome);
+
+                    String valor = String.format("%.2f", presente.getValor());
+                    String novoValor = JOptionPane.showInputDialog("Digite o novo valor:", valor);
+                    if (!ValidaInput.string(novoValor) || !ValidaInput.stringEhDouble(novoValor)) {
+                        return;
+                    }
+
+                    presente.setValor(Double.parseDouble(Utils.formatDouble(novoValor)));
+
+                    String novasCotas = JOptionPane.showInputDialog("Digite as novas cotas:", presente.getCotas());
+                    if (!ValidaInput.string(novasCotas) || !ValidaInput.stringEhInt(novasCotas)) {
+                        return;
+                    }
+
+                    presente.setCotas(Integer.parseInt(novasCotas));
+                    presente.setDataModificacao();
+                    presentesDatabase.update(presente);
+                    JOptionPane.showMessageDialog(null, "Presente alterado com sucesso!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Presente com ID " + idAlterar + " não encontrado.");
+                }
+                return;
+
+            case 2: //remover presente
+                String idRemover = JOptionPane.showInputDialog("Digite o ID do presente que deseja remover:");
+                if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) {
+                    return;
+                }
+
+                presente = presentesDatabase.getById(Integer.parseInt(idRemover));
+                if (presente != null) {
+                    int confirmacaoRemocao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o presente com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
+                    if (confirmacaoRemocao == JOptionPane.YES_OPTION) {
+                        presentesDatabase.delete(Integer.parseInt(idRemover));
+                        JOptionPane.showMessageDialog(null, "Presente removido com sucesso!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Remoção cancelada.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Presente com ID " + idRemover + " não encontrado.");
+                }
+                return;
+
+            case 3: // Visualizar Presentes Cadastrados
+                todosPresentes = presentesDatabase.getAll();
+                if (todosPresentes.length > 0) {
+                    String strPresentes = "";
+                    for (int i = 0; i < todosPresentes.length; i++) {
+                        strPresentes += todosPresentes[i].toString() + "\n";
+                    }
+                    JOptionPane.showMessageDialog(null, strPresentes);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
+                }
+                return;
+
+            case 4: // Visualizar Presentes Recebidos
+                todosPresentesRecebido = presentesRecebidosDatabase.getAll();
+                if (todosPresentesRecebido.length > 0) {
+                    String strPresentesRecebidos = "";
+                    for (PresenteRecebido pr : todosPresentesRecebido) {
+                        strPresentesRecebidos += pr.toString() + "\n";
+                    }
+                    JOptionPane.showMessageDialog(null, strPresentesRecebidos);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nenhum presente recebido.");
+                }
                 return;
         }
     }
@@ -1235,19 +1313,68 @@ public class Controller {
         }
         while (controlForm) {
             switch (escolhaConvidado) {
-                case 0:
-                    while (controlForm) {
-                        int escolhaPresenteConvidado = menuInicio.menuPresentesConvidado();
-                        perfilPresenteConvidado(escolhaPresenteConvidado);
+                case 0: // Dar presente
+
+                    todosPresentes = presentesDatabase.getAll();
+                    String strPresentes = "";
+
+                    if (todosPresentes.length > 0) {
+                        for (int i = 0; i < todosPresentes.length; i++) {
+                            strPresentes += todosPresentes[i].toStringConvidado() + "\n";
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
                     }
-                    controlForm = true;
+
+                    String escolha = JOptionPane.showInputDialog(null, strPresentes + "\nEscolha o número do presente que deseja dar:");
+
+                    if (!ValidaInput.string(escolha) || !ValidaInput.stringEhInt(escolha)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+
+                    int numeroPresente = Integer.parseInt(escolha) - 1;
+                    if (numeroPresente < 0 || numeroPresente >= todosPresentes.length) {
+                        JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
+                        return;
+                    }
+                    presente = presentesDatabase.getById(numeroPresente + 1);
+
+                    // Solicita quantas cotas o usuário deseja dar
+                    String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
+                    if (!ValidaInput.string(cotas) || !ValidaInput.stringEhInt(cotas)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+
+                    int cotasInt = Integer.parseInt(cotas);
+                    if (cotasInt < 0 || cotasInt > presente.getCotas()) {
+                        JOptionPane.showMessageDialog(null, "Cotas inválido! Escolha novamente.");
+                        return;
+                    }
+                    int cotasDisponiveis = presente.getCotas();
+
+                    // Confirmação
+                    int confirmacao = JOptionPane.showConfirmDialog(null,
+                            "Você escolheu dar " + cotasInt + " cotas do presente " + presente.getNome()
+                            + "\nCotas disponíveis: " + cotasDisponiveis + "\nConfirmar?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacao == JOptionPane.YES_OPTION) {
+                        presente.setCotas(cotasDisponiveis - cotasInt);
+                        presentesDatabase.update(presente);
+                        presenteRecebido = new PresenteRecebido();
+                        presenteRecebido.setPresente(presente);
+                        presenteRecebido.setQtdCotas(cotasInt);
+                        presentesRecebidosDatabase.create(presenteRecebido);
+                        JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Presente Cancelado!");
+                    }
                     return;
                 case 1:
-                    while (controlForm) {
-                        int escolhaRecadoConvidado = menuInicio.menuRecadosConvidado();
-                        perfilRecadoConvidado(escolhaRecadoConvidado);
-                    }
-                    controlForm = true;
+//                    while (controlForm) {
+//                        int escolhaRecadoConvidado = menuInicio.menuRecadosConvidado();
+//                        perfilRecadoConvidado(escolhaRecadoConvidado);
+//                    }
+//                    controlForm = true;
                     return;
                 case 2:
                     // Método de Confirmar Presença
@@ -1261,64 +1388,6 @@ public class Controller {
                     }
                     return;
             }
-        }
-    }
-
-    public void perfilPresenteConvidado(int escolhaPresenteConvidado) {
-        if (escolhaPresenteConvidado == 2 || escolhaPresenteConvidado == -1) {
-            controlForm = false; // Volta ao menu de convidados
-            return;
-        }
-
-        switch (escolhaPresenteConvidado) {
-            case 0: // Dar presente
-//                while (true) {
-//                    // Exibe a lista de presentes
-//                    String listaPresentes = gerador.getListaPresentes();
-//                    String escolha = JOptionPane.showInputDialog(null, listaPresentes + "\nEscolha o número do presente que deseja dar:");
-//
-//                    if (escolha == null || !ValidaInput.stringEhInt(escolha)) {
-//                        return; // Volta ao menu se cancelar ou fechar
-//                    }
-//
-//                    int numeroPresente = Integer.parseInt(escolha) - 1;
-//                    if (numeroPresente < 0 || numeroPresente >= gerador.PRESENTES.length) {
-//                        JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
-//                        continue;
-//                    }
-//
-//                    // Solicita quantas cotas o usuário deseja dar
-//                    String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
-//                    if (cotas == null || !ValidaInput.stringEhInt(cotas)) {
-//                        return; // Volta ao menu se cancelar ou fechar
-//                    }
-//
-//                    int cotasInt = Integer.parseInt(cotas);
-//                    int cotasDisponiveis = gerador.getCotasDisponiveis(numeroPresente);
-//
-//                    // Confirmação
-//                    int confirmacao = JOptionPane.showConfirmDialog(null,
-//                            "Você escolheu dar " + cotasInt + " cotas para " + gerador.PRESENTES[numeroPresente]
-//                            + "\nCotas disponíveis: " + cotasDisponiveis + "\nConfirmar?", "Confirmar", JOptionPane.YES_NO_OPTION);
-//
-//                    if (confirmacao == JOptionPane.YES_OPTION) {
-//                        // Tenta dar o presente
-//                        boolean sucesso = gerador.darPresente(numeroPresente, cotasInt);
-//                        if (sucesso) {
-//                            JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
-//                        } else {
-//                            JOptionPane.showMessageDialog(null, "Cotas insuficientes! Tente novamente.");
-//                        }
-//                    }
-//
-//                    // Exibe a lista atualizada de presentes
-////                    listaPresentes = gerador.getListaPresentes();
-////                    JOptionPane.showMessageDialog(null, listaPresentes);
-                return;
-
-            case 1: // Ver presentes
-                JOptionPane.showMessageDialog(null, gerador.getListaPresentes());
-                return;
         }
     }
 

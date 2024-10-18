@@ -59,4 +59,11 @@ public class PresenteRecebido extends Identifiable{
         this.dataModificacao = LocalDateTime.now();
     }
 
+    @Override
+    public String toString() {
+        return "PRESENTE RECEBIDO => | PESSOA: teste" /*+ pessoa.getNome()*/ + " | PRESENTE: " + presente.getNome() + "| QTDCOTAS: " + qtdCotas + " | DC: " + dataCriacao + " | DM: " + dataModificacao + " |";
+    }
+    
+    
+
 }

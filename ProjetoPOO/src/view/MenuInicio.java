@@ -85,26 +85,8 @@ public class MenuInicio {
 //INICIO MENU CONVIDADO
     public int menuConvidado() {
 
-        String[] opcoes = {"Presentes", "Recados", "Confirmar Presença", "Voltar"};
+        String[] opcoes = {"Dar Presentes", "Deixar Recados", "Confirmar Presença", "Voltar"};
         int escolha = JOptionPane.showOptionDialog(null, "Menu Convidado", "Convidado", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
-
-        return escolha;
-    }
-
-    // Menu de Presentes para Convidado
-    public int menuPresentesConvidado() {
-        String[] opcoes = {"Dar Presente", "Ver Presentes", "Voltar"};
-        int escolha = JOptionPane.showOptionDialog(null, "Menu Presentes", "Presentes", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
-
-        return escolha;
-    }
-
-    // Menu de Recados para Convidado
-    public int menuRecadosConvidado() {
-        String[] opcoes = {"Ver Recados", "Deixar Recado", "Voltar"};
-        int escolha = JOptionPane.showOptionDialog(null, "Menu Recados", "Recados", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
 
         return escolha;
