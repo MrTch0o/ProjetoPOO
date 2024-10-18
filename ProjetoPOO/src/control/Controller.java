@@ -4,6 +4,7 @@
  */
 package control;
 
+import java.awt.HeadlessException;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 import model.Pessoa;
@@ -13,6 +14,7 @@ import model.Convidado;
 import model.Familia;
 import model.Pagamento;
 import model.Calendario;
+import model.MuralRecado;
 import model.Presente;
 import model.PresenteRecebido;
 import model.dao.Database;
@@ -34,6 +36,7 @@ public class Controller {
     Calendario calendario;
     Presente presente;
     PresenteRecebido presenteRecebido;
+    MuralRecado muralRecado;
     Pessoa[] todasPessoas;
     Usuario[] todosUsuarios;
     Fornecedor[] todosFornecedores;
@@ -42,6 +45,7 @@ public class Controller {
     Calendario[] todosCalendarios;
     Presente[] todosPresentes;
     PresenteRecebido[] todosPresentesRecebido;
+    MuralRecado[] todosMuralRecado;
     Database<Pessoa> pessoasDatabase = new Database<>(new Pessoa[0]);
     Database<Usuario> usuariosDatabase = new Database<>(new Usuario[0]);
     Database<Fornecedor> fornecedoresDatabase = new Database<>(new Fornecedor[0]);
@@ -50,6 +54,7 @@ public class Controller {
     Database<Calendario> calendariosDatabase = new Database<>(new Calendario[0]);
     Database<Presente> presentesDatabase = new Database<>(new Presente[0]);
     Database<PresenteRecebido> presentesRecebidosDatabase = new Database<>(new PresenteRecebido[0]);
+    Database<MuralRecado> muralRecadoDatabase = new Database<>(new MuralRecado[0]);
     Utils utils = new Utils();
     Gerador gerador = new Gerador();
 
@@ -134,7 +139,7 @@ public class Controller {
 
 //INICIO MENU ADMINISTRADOR
     public void perfilAdm(int escolhaAdm) {
-        if (escolhaAdm == 7 || escolhaAdm == -1) {
+        if (escolhaAdm == 8 || escolhaAdm == -1) {
             controlForm = false;
             return;
         }
@@ -191,6 +196,14 @@ public class Controller {
                         perfilGerenciarCalendario(escolhaCalendario);
                     }
                     controlForm = true;
+                    return;
+                case 7:
+                    todosMuralRecado = muralRecadoDatabase.getAll();
+                    String strMuralRecado = "";
+                    for(MuralRecado mr : todosMuralRecado){
+                        strMuralRecado += mr.toString() + "\n";
+                    }
+                    JOptionPane.showMessageDialog(null, strMuralRecado, "Mural de Recados", JOptionPane.INFORMATION_MESSAGE);
                     return;
             }
         }
@@ -1326,7 +1339,8 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
                     }
 
-                    String escolha = JOptionPane.showInputDialog(null, strPresentes + "\nEscolha o número do presente que deseja dar:");
+                    String escolha = JOptionPane.showInputDialog(null, strPresentes + "\nEscolha o número do presente que deseja dar:", "Presentes Disponíveis", JOptionPane.QUESTION_MESSAGE);
+
 
                     if (!ValidaInput.string(escolha) || !ValidaInput.stringEhInt(escolha)) {
                         return; // Volta ao menu se cancelar ou fechar
@@ -1370,12 +1384,13 @@ public class Controller {
                     }
                     return;
                 case 1:
-//                    while (controlForm) {
-//                        int escolhaRecadoConvidado = menuInicio.menuRecadosConvidado();
-//                        perfilRecadoConvidado(escolhaRecadoConvidado);
-//                    }
-//                    controlForm = true;
+                    if (deixarRecado()) {
+                        JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Falha ao deixar Recado!\n");
+                    }
                     return;
+
                 case 2:
                     // Método de Confirmar Presença
                     String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
@@ -1390,30 +1405,50 @@ public class Controller {
             }
         }
     }
-
-    public void perfilRecadoConvidado(int escolhaRecadoConvidado) {
-        if (escolhaRecadoConvidado == 2 || escolhaRecadoConvidado == -1) {
-            controlForm = false;
-            return;
-        }
-        switch (escolha) {
-            case 0:
-                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
-                // Função de exibição de recados
-                return;
-            case 1:// Deixar Recado no Menu Logado
-                String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
-                String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
-                        "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
-
-                if (recado.length() > 4000) {
-                    recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
-                }
-                // Lógica para armazenar o recado
-                JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
-
-                return;
-        }
-    }
+//
+//    public void perfilRecadoConvidado(int escolhaRecadoConvidado) {
+//        if (escolhaRecadoConvidado == 2 || escolhaRecadoConvidado == -1) {
+//            controlForm = false;
+//            return;
+//        }
+//        switch (escolha) {
+//            case 0:
+//                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
+//                // Função de exibição de recados
+//                return;
+//            case 1:// Deixar Recado no Menu Logado
+//                String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
+//                String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
+//                        "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
+//
+//                if (recado.length() > 4000) {
+//                    recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
+//                }
+//                // Lógica para armazenar o recado
+//                JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
+//
+//                return;
+//        }
+//    }
 //FIM MENU CONVIDADO
+
+    private boolean deixarRecado() throws HeadlessException {
+        muralRecado = new MuralRecado();
+        String nome = JOptionPane.showInputDialog("Digite seu Nome:", gerador.gerarNome());
+        if (!ValidaInput.string(nome)) {
+            return false;
+        }
+        muralRecado.setNome(nome);
+        String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
+                "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
+        if (!ValidaInput.string(recado)) {
+            return false;
+        }
+        if (recado.length() > 4000) {
+            recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
+        }
+        muralRecado.setRecado(recado);
+        muralRecadoDatabase.create(muralRecado);
+        return true;
+    }
 }

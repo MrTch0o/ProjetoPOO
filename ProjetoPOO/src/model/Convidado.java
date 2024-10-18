@@ -15,7 +15,7 @@ public class Convidado extends Identifiable{
     private Pessoa pessoa;
     private Familia familia;
     private String parentesco;
-    private boolean confirmado;
+    private boolean confirmado=false;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
     
