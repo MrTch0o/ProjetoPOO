@@ -12,6 +12,7 @@ public class Usuario extends Identifiable{
     private String login;
     private String senha;
     private Pessoa pessoa;
+    private boolean logado=false;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
     
@@ -51,6 +52,16 @@ public class Usuario extends Identifiable{
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
+
+    public boolean isLogado() {
+        return logado;
+    }
+
+    public void setLogado(boolean logado) {
+        this.logado = logado;
+    }
+    
+    
 
     public LocalDateTime getDataCriacao() {
         return dataCriacao;

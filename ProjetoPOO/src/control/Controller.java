@@ -59,6 +59,7 @@ public class Controller {
     Gerador gerador = new Gerador();
 
     public void main(String[] args) {
+        
         while (controlForm) {
             escolha = menuInicio.menuInicial();
             if (escolha == 3 || escolha == -1) {
@@ -76,14 +77,84 @@ public class Controller {
                 case 1:
                     menuInicio.menuNaoLogado();
                     return;
-                case 2:
-                    JOptionPane.showMessageDialog(null, "Funcionalidade de Registro.");
-                    // Função de registro aqui
-                    return;
+                case 2: // Função de registro aqui
+                    while (controlForm) {
+                        pessoa = new Pessoa();
+
+                        // Validação de nome
+                        String nome = JOptionPane.showInputDialog("Digite seu nome:", gerador.gerarNome());
+                        if (!ValidaInput.string(nome)) {
+                            return; // Volta ao menu se cancelar ou fechar
+                        }
+                        pessoa.setNome(nome);
+
+                        // Validação de telefone
+                        String telefone = JOptionPane.showInputDialog("Digite seu telefone:", gerador.gerarTelefone());
+                        if (!ValidaInput.string(telefone)) {
+                            return; // Volta ao menu se cancelar ou fechar
+                        }
+                        pessoa.setTelefone(telefone);
+
+                        // Validação de nascimento
+                        String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd/MM/yyyy):", gerador.gerarDataNascimento());
+                        if (!ValidaInput.string(nascimento)) {
+                            return; // Volta ao menu se cancelar ou fechar
+                        }
+                        try {
+                            pessoa.setNascimento(utils.formatDate(nascimento));
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(null, "Data inválida");
+                            return;
+                        }
+                        pessoasDatabase.create(pessoa);
+                        JOptionPane.showMessageDialog(null, "Pessoa incluída com sucesso!");
+
+                        usuario = new Usuario();
+                        String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar usuário:", pessoa.getID());
+                        if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) { // Verifica se contem somente numero na string
+                            return;
+                        }
+                        pessoa = pessoasDatabase.getById(Integer.parseInt(pessoaId));
+                        if (pessoa == null) {
+                            JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " não encontrada.");
+                            return;
+                        }
+                        if (usuariosDatabase.getById(Integer.parseInt(pessoaId)) != null) {
+                            JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem usuário vinculado.");
+                            return;
+                        }
+
+                        usuario.setPessoa(pessoa);
+                        String login = JOptionPane.showInputDialog("Digite o login do usuário:");
+                        if (!ValidaInput.string(login)) {
+                            return; // Volta ao menu se cancelar ou fechar
+                        }
+                        usuario.setLogin(login);
+
+                        String senha = JOptionPane.showInputDialog("Digite a senha do usuário:");
+                        if (!ValidaInput.string(senha)) {
+                            return; // Volta ao menu se cancelar ou fechar
+                        }
+                        usuario.setSenha(senha);
+
+//                    String tipo = JOptionPane.showInputDialog("Digite o tipo do usuário (Admin/Convidado):", "Convidado");
+//                    if (!ValidaInput.string(tipo)) {
+//                        return; // Volta ao menu se cancelar ou fechar
+//                    }
+                        usuario.setTipo("");
+
+                        // Criar usuário no banco de dados
+                        usuariosDatabase.create(usuario);
+
+                        JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
+                        controlForm = false;
+                    }
+                    break;
                 case 3:
                     JOptionPane.showMessageDialog(null, "Saindo do sistema.");
                     System.exit(0);
             }
+            controlForm = true;
         }
     }
 
@@ -200,7 +271,7 @@ public class Controller {
                 case 7:
                     todosMuralRecado = muralRecadoDatabase.getAll();
                     String strMuralRecado = "";
-                    for(MuralRecado mr : todosMuralRecado){
+                    for (MuralRecado mr : todosMuralRecado) {
                         strMuralRecado += mr.toString() + "\n";
                     }
                     JOptionPane.showMessageDialog(null, strMuralRecado, "Mural de Recados", JOptionPane.INFORMATION_MESSAGE);
@@ -1341,7 +1412,6 @@ public class Controller {
 
                     String escolha = JOptionPane.showInputDialog(null, strPresentes + "\nEscolha o número do presente que deseja dar:", "Presentes Disponíveis", JOptionPane.QUESTION_MESSAGE);
 
-
                     if (!ValidaInput.string(escolha) || !ValidaInput.stringEhInt(escolha)) {
                         return; // Volta ao menu se cancelar ou fechar
                     }
@@ -1383,7 +1453,7 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Presente Cancelado!");
                     }
                     return;
-                case 1:
+                case 1://deixar recado
                     if (deixarRecado()) {
                         JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n");
                     } else {
@@ -1391,7 +1461,7 @@ public class Controller {
                     }
                     return;
 
-                case 2:
+                case 2: //confirmar presença
                     // Método de Confirmar Presença
                     String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
 
@@ -1405,33 +1475,8 @@ public class Controller {
             }
         }
     }
-//
-//    public void perfilRecadoConvidado(int escolhaRecadoConvidado) {
-//        if (escolhaRecadoConvidado == 2 || escolhaRecadoConvidado == -1) {
-//            controlForm = false;
-//            return;
-//        }
-//        switch (escolha) {
-//            case 0:
-//                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
-//                // Função de exibição de recados
-//                return;
-//            case 1:// Deixar Recado no Menu Logado
-//                String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
-//                String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
-//                        "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
-//
-//                if (recado.length() > 4000) {
-//                    recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
-//                }
-//                // Lógica para armazenar o recado
-//                JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
-//
-//                return;
-//        }
-//    }
-//FIM MENU CONVIDADO
 
+//FIM MENU CONVIDADO
     private boolean deixarRecado() throws HeadlessException {
         muralRecado = new MuralRecado();
         String nome = JOptionPane.showInputDialog("Digite seu Nome:", gerador.gerarNome());
