@@ -142,6 +142,7 @@ public class Controller {
 //                        return; // Volta ao menu se cancelar ou fechar
 //                    }
                         usuario.setTipo("");
+                        definir o tipo como sera tratado
 
                         // Criar usuário no banco de dados
                         usuariosDatabase.create(usuario);
