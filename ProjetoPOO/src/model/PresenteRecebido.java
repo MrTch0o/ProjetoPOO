@@ -61,7 +61,7 @@ public class PresenteRecebido extends Identifiable{
 
     @Override
     public String toString() {
-        return "PRESENTE RECEBIDO => | PESSOA: teste" /*+ pessoa.getNome()*/ + " | PRESENTE: " + presente.getNome() + "| QTDCOTAS: " + qtdCotas + " | DC: " + dataCriacao + " | DM: " + dataModificacao + " |";
+        return "PRESENTE RECEBIDO => | PESSOA: " + pessoa.getNome() + " | PRESENTE: " + presente.getNome() + "| QTDCOTAS: " + qtdCotas + " | DC: " + dataCriacao + " | DM: " + dataModificacao + " |";
     }
     
     

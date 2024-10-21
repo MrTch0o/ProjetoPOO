@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import model.dao.Identifiable;
 
 public class Usuario extends Identifiable{
-    private int tipo;
+    private int tipo = -1;
     private String login;
     private String senha;
     private Pessoa pessoa;

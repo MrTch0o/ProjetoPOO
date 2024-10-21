@@ -91,17 +91,11 @@ public class Controller {
             controlForm = false;
             return;
         }
-        String loginSenha;
-        if (escolhaPerfil == 0) {
-            loginSenha = "admin";
-        } else {
-            loginSenha = "convidado";
-        }
-        String login = JOptionPane.showInputDialog("Digite seu login:", loginSenha);
+        String login = JOptionPane.showInputDialog("Digite seu login:");
         if (!ValidaInput.string(login)) {
             return;
         }
-        String senha = JOptionPane.showInputDialog("Digite sua senha:", loginSenha);
+        String senha = JOptionPane.showInputDialog("Digite sua senha:");
         if (!ValidaInput.string(senha)) {
             return;
         }
@@ -110,33 +104,52 @@ public class Controller {
             switch (escolhaPerfil) {
                 case 0:
                     todosUsuarios = usuariosDatabase.getAll();
+                    boolean logado = false;
                     for (Usuario u : todosUsuarios) {
-                        if (login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha()) && u.isAdmin()) {
+                        if ((login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha())) && u.isAdmin()) {
+                            logado = true;
+                            u.setLogado(true);
+                            usuariosDatabase.update(u);
                             while (controlForm) {
                                 int escolhaAdm = menuInicio.menuAdministrador();
                                 perfilAdm(escolhaAdm);
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Administrador.");
+                            u.setLogado(false);
+                            usuariosDatabase.update(u);
+                            controlForm = false;
+                            break;
                         }
-                        controlForm = true;
-                        return;
                     }
+                    if (!logado) {
+                        JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Administrador.");
+                    }
+                    logado = false;
+                    controlForm = true;
                     return;
+
                 case 1:
                     todosUsuarios = usuariosDatabase.getAll();
+                    logado = false;
                     for (Usuario u : todosUsuarios) {
-                        if (login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha()) && !u.isAdmin()) {
+                        if ((login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha())) && !u.isAdmin()) {
+                            logado = true;
+                            u.setLogado(true);
+                            usuariosDatabase.update(u);
                             while (controlForm) {
                                 int escolhaConvidado = menuInicio.menuConvidado();
                                 perfilConvidado(escolhaConvidado);
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Convidado.");
+                            u.setLogado(false);
+                            usuariosDatabase.update(u);
+                            controlForm = false;
+                            break;
                         }
-                        controlForm = true;
-                        return;
                     }
+                    if (!logado) {
+                        JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Convidado.");
+                    }
+                    logado = false;
+                    controlForm = true;
                     return;
             }
         }
@@ -255,7 +268,12 @@ public class Controller {
 
             case 1: // alterar
                 // ID da pessoa a ser alterada
-                String idAlterar = JOptionPane.showInputDialog("Digite o ID da pessoa que deseja alterar:");
+                todasPessoas = pessoasDatabase.getAll();
+                String strPessoaId = "Digite o ID da pessoa que deseja alterar:" + "\n";
+                for (Pessoa p : todasPessoas) {
+                    strPessoaId += p.toString() + "\n";
+                }
+                String idAlterar = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -360,7 +378,12 @@ public class Controller {
 
             case 0: // incluir
                 usuario = new Usuario();
-                String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar usuário:");
+                todasPessoas = pessoasDatabase.getAll();
+                String strPessoaId = "Digite o ID da pessoa para criar usuário:" + "\n";
+                for (Pessoa p : todasPessoas) {
+                    strPessoaId += p.toString() + "\n";
+                }
+                String pessoaId = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -388,10 +411,13 @@ public class Controller {
                 usuario.setSenha(senha);
 
                 String tipo = JOptionPane.showInputDialog("Digite o tipo do usuário (0 - Administrador | 1 - Usuario):", "1");
-                if (!ValidaInput.string(tipo) || !ValidaInput.stringEhInt(tipo) || !"0".equals(tipo) || !"1".equals(tipo)) {
+                if (!ValidaInput.string(tipo) || !ValidaInput.stringEhInt(tipo) || (!"0".equals(tipo) && !"1".equals(tipo))) {
                     return; // Volta ao menu se cancelar ou fechar
                 }
                 usuario.setTipo(Integer.parseInt(tipo));
+                if (usuario.getTipo() == 0) {
+                    usuario.setAdmin(true);
+                }
 
                 // Criar usuário no banco de dados
                 usuariosDatabase.create(usuario);
@@ -400,7 +426,13 @@ public class Controller {
                 return;
 
             case 1: // alterar
-                String idAlterar = JOptionPane.showInputDialog("Digite o ID do usuário:");
+
+                todosUsuarios = usuariosDatabase.getAll();
+                String strUsuarioId = "Digite o ID do usuário:" + "\n";
+                for (Usuario p : todosUsuarios) {
+                    strUsuarioId += p.toString() + "\n";
+                }
+                String idAlterar = JOptionPane.showInputDialog(null, strUsuarioId, "Usuários", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -419,10 +451,13 @@ public class Controller {
                     usuario.setSenha(novaSenha);
 
                     String novoTipo = JOptionPane.showInputDialog("Digite o tipo do usuário (0 - Administrador | 1 - Usuario):", usuario.getTipo());
-                    if (!ValidaInput.string(novoTipo) || !ValidaInput.stringEhInt(novoTipo) || !"0".equals(novoTipo) || !"1".equals(novoTipo)) {
+                    if (!ValidaInput.string(novoTipo) || !ValidaInput.stringEhInt(novoTipo) || (!"0".equals(novoTipo) && !"1".equals(novoTipo))) {
                         return; // Volta ao menu se cancelar ou fechar
                     }
                     usuario.setTipo(Integer.parseInt(novoTipo));
+                    if (usuario.getTipo() == 0) {
+                        usuario.setAdmin(true);
+                    }
                     usuario.setDataModificacao();
 
                     //Atualizar registro no banco de dados
@@ -1381,6 +1416,11 @@ public class Controller {
                         presenteRecebido = new PresenteRecebido();
                         presenteRecebido.setPresente(presente);
                         presenteRecebido.setQtdCotas(cotasInt);
+                        for (Usuario u : todosUsuarios) {
+                            if (u.isLogado()) {
+                                presenteRecebido.setPessoa(u.getPessoa());
+                            }
+                        }
                         presentesRecebidosDatabase.create(presenteRecebido);
                         JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
                     } else {
@@ -1413,11 +1453,11 @@ public class Controller {
 //FIM MENU CONVIDADO
     private boolean deixarRecado() throws HeadlessException {
         muralRecado = new MuralRecado();
-        String nome = JOptionPane.showInputDialog("Digite seu Nome:", gerador.gerarNome());
-        if (!ValidaInput.string(nome)) {
-            return false;
-        }
-        muralRecado.setNome(nome);
+//        String nome = JOptionPane.showInputDialog("Digite seu Nome:", gerador.gerarNome());
+//        if (!ValidaInput.string(nome)) {
+//            return false;
+//        }
+//        muralRecado.setNome(nome);
         String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
                 "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
         if (!ValidaInput.string(recado)) {
@@ -1427,6 +1467,12 @@ public class Controller {
             recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
         }
         muralRecado.setRecado(recado);
+        for (Usuario u : todosUsuarios) {
+            if (u.isLogado()) {
+                Pessoa p = u.getPessoa();
+                muralRecado.setNome(p.getNome());
+            }
+        }
         muralRecadoDatabase.create(muralRecado);
         return true;
     }
@@ -1478,24 +1524,28 @@ public class Controller {
         if (!ValidaInput.string(tipo) || !ValidaInput.stringEhInt(tipo) || (!"0".equals(tipo) && !"1".equals(tipo))) {
             return false; // Volta ao menu se cancelar ou fechar
         }
-        todosUsuarios = usuariosDatabase.getAll();
-        for (Usuario u : todosUsuarios) {
-            if (u.getTipo() == 0) {
-                JOptionPane.showMessageDialog(null, "Já existe Administrador cadastrado", "Atenção", JOptionPane.INFORMATION_MESSAGE);
-                return false;
+        if ("0".equals(tipo)) {
+            todosUsuarios = usuariosDatabase.getAll();
+            for (Usuario u : todosUsuarios) {
+                if (u.getTipo() == 0) {
+                    JOptionPane.showMessageDialog(null, "Já existe Administrador cadastrado", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
             }
         }
         usuario.setTipo(Integer.parseInt(tipo));
         if (usuario.getTipo() == 0) {
             usuario.setAdmin(true);
+        } else {
+            usuario.setAdmin(false);
         }
+
         pessoasDatabase.create(pessoa);
         pessoa = pessoasDatabase.getById(pessoa.getID());
         usuario.setPessoa(pessoa);
 
         // Criar usuário no banco de dados
         usuariosDatabase.create(usuario);
-
         JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
         return false;
     }
