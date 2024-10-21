@@ -8,11 +8,12 @@ import java.time.LocalDateTime;
 import model.dao.Identifiable;
 
 public class Usuario extends Identifiable{
-    private String tipo;
+    private int tipo;
     private String login;
     private String senha;
     private Pessoa pessoa;
     private boolean logado=false;
+    private boolean admin=false;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
     
@@ -21,11 +22,11 @@ public class Usuario extends Identifiable{
       this.dataCriacao = LocalDateTime.now();
   };
 
-    public String getTipo() {
+    public int getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(int tipo) {
         this.tipo = tipo;
     }
 
@@ -60,9 +61,15 @@ public class Usuario extends Identifiable{
     public void setLogado(boolean logado) {
         this.logado = logado;
     }
-    
-    
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+    
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
     }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package control;
 
 import java.awt.HeadlessException;
@@ -59,7 +55,7 @@ public class Controller {
     Gerador gerador = new Gerador();
 
     public void main(String[] args) {
-        
+
         while (controlForm) {
             escolha = menuInicio.menuInicial();
             if (escolha == 3 || escolha == -1) {
@@ -79,83 +75,14 @@ public class Controller {
                     return;
                 case 2: // Função de registro aqui
                     while (controlForm) {
-                        pessoa = new Pessoa();
-
-                        // Validação de nome
-                        String nome = JOptionPane.showInputDialog("Digite seu nome:", gerador.gerarNome());
-                        if (!ValidaInput.string(nome)) {
-                            return; // Volta ao menu se cancelar ou fechar
-                        }
-                        pessoa.setNome(nome);
-
-                        // Validação de telefone
-                        String telefone = JOptionPane.showInputDialog("Digite seu telefone:", gerador.gerarTelefone());
-                        if (!ValidaInput.string(telefone)) {
-                            return; // Volta ao menu se cancelar ou fechar
-                        }
-                        pessoa.setTelefone(telefone);
-
-                        // Validação de nascimento
-                        String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd/MM/yyyy):", gerador.gerarDataNascimento());
-                        if (!ValidaInput.string(nascimento)) {
-                            return; // Volta ao menu se cancelar ou fechar
-                        }
-                        try {
-                            pessoa.setNascimento(utils.formatDate(nascimento));
-                        } catch (Exception e) {
-                            JOptionPane.showMessageDialog(null, "Data inválida");
-                            return;
-                        }
-                        pessoasDatabase.create(pessoa);
-                        JOptionPane.showMessageDialog(null, "Pessoa incluída com sucesso!");
-
-                        usuario = new Usuario();
-                        String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar usuário:", pessoa.getID());
-                        if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) { // Verifica se contem somente numero na string
-                            return;
-                        }
-                        pessoa = pessoasDatabase.getById(Integer.parseInt(pessoaId));
-                        if (pessoa == null) {
-                            JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " não encontrada.");
-                            return;
-                        }
-                        if (usuariosDatabase.getById(Integer.parseInt(pessoaId)) != null) {
-                            JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem usuário vinculado.");
-                            return;
-                        }
-
-                        usuario.setPessoa(pessoa);
-                        String login = JOptionPane.showInputDialog("Digite o login do usuário:");
-                        if (!ValidaInput.string(login)) {
-                            return; // Volta ao menu se cancelar ou fechar
-                        }
-                        usuario.setLogin(login);
-
-                        String senha = JOptionPane.showInputDialog("Digite a senha do usuário:");
-                        if (!ValidaInput.string(senha)) {
-                            return; // Volta ao menu se cancelar ou fechar
-                        }
-                        usuario.setSenha(senha);
-
-//                    String tipo = JOptionPane.showInputDialog("Digite o tipo do usuário (Admin/Convidado):", "Convidado");
-//                    if (!ValidaInput.string(tipo)) {
-//                        return; // Volta ao menu se cancelar ou fechar
-//                    }
-                        usuario.setTipo("");
-                        definir o tipo como sera tratado
-
-                        // Criar usuário no banco de dados
-                        usuariosDatabase.create(usuario);
-
-                        JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
-                        controlForm = false;
+                        controlForm = registraUsuario();
                     }
+                    controlForm = true;
                     break;
                 case 3:
                     JOptionPane.showMessageDialog(null, "Saindo do sistema.");
                     System.exit(0);
             }
-            controlForm = true;
         }
     }
 
@@ -171,45 +98,51 @@ public class Controller {
             loginSenha = "convidado";
         }
         String login = JOptionPane.showInputDialog("Digite seu login:", loginSenha);
-        if (login == null) {
+        if (!ValidaInput.string(login)) {
             return;
         }
         String senha = JOptionPane.showInputDialog("Digite sua senha:", loginSenha);
-        if (senha == null) {
+        if (!ValidaInput.string(senha)) {
             return;
         }
 
         while (true) {
             switch (escolhaPerfil) {
                 case 0:
-                    if ("admin".equals(login) && "admin".equals(senha)) {
-                        while (controlForm) {
-                            int escolhaAdm = menuInicio.menuAdministrador();
-                            perfilAdm(escolhaAdm);
+                    todosUsuarios = usuariosDatabase.getAll();
+                    for (Usuario u : todosUsuarios) {
+                        if (login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha()) && u.isAdmin()) {
+                            while (controlForm) {
+                                int escolhaAdm = menuInicio.menuAdministrador();
+                                perfilAdm(escolhaAdm);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Administrador.");
                         }
                         controlForm = true;
                         return;
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Administrador.");
                     }
                     return;
                 case 1:
-                    if ("convidado".equals(login) && "convidado".equals(senha)) {
-                        while (controlForm) {
-                            int escolhaConvidado = menuInicio.menuConvidado();
-                            perfilConvidado(escolhaConvidado);
+                    todosUsuarios = usuariosDatabase.getAll();
+                    for (Usuario u : todosUsuarios) {
+                        if (login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha()) && !u.isAdmin()) {
+                            while (controlForm) {
+                                int escolhaConvidado = menuInicio.menuConvidado();
+                                perfilConvidado(escolhaConvidado);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Convidado.");
                         }
                         controlForm = true;
                         return;
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Login ou senha inválidos para Convidado.");
                     }
                     return;
             }
         }
     }
+    //INICIO MENU ADMINISTRADOR
 
-//INICIO MENU ADMINISTRADOR
     public void perfilAdm(int escolhaAdm) {
         if (escolhaAdm == 8 || escolhaAdm == -1) {
             controlForm = false;
@@ -454,11 +387,11 @@ public class Controller {
                 }
                 usuario.setSenha(senha);
 
-                String tipo = JOptionPane.showInputDialog("Digite o tipo do usuário (Admin/Convidado):", "Convidado");
-                if (!ValidaInput.string(tipo)) {
+                String tipo = JOptionPane.showInputDialog("Digite o tipo do usuário (0 - Administrador | 1 - Usuario):", "1");
+                if (!ValidaInput.string(tipo) || !ValidaInput.stringEhInt(tipo) || !"0".equals(tipo) || !"1".equals(tipo)) {
                     return; // Volta ao menu se cancelar ou fechar
                 }
-                usuario.setTipo(tipo);
+                usuario.setTipo(Integer.parseInt(tipo));
 
                 // Criar usuário no banco de dados
                 usuariosDatabase.create(usuario);
@@ -485,11 +418,11 @@ public class Controller {
                     }
                     usuario.setSenha(novaSenha);
 
-                    String novoTipo = JOptionPane.showInputDialog("Digite o novo tipo de usuário (Admin/Convidado):", usuario.getTipo());
-                    if (!ValidaInput.string(novoTipo)) {
-                        return;
+                    String novoTipo = JOptionPane.showInputDialog("Digite o tipo do usuário (0 - Administrador | 1 - Usuario):", usuario.getTipo());
+                    if (!ValidaInput.string(novoTipo) || !ValidaInput.stringEhInt(novoTipo) || !"0".equals(novoTipo) || !"1".equals(novoTipo)) {
+                        return; // Volta ao menu se cancelar ou fechar
                     }
-                    usuario.setTipo(novoTipo);
+                    usuario.setTipo(Integer.parseInt(novoTipo));
                     usuario.setDataModificacao();
 
                     //Atualizar registro no banco de dados
@@ -1496,5 +1429,74 @@ public class Controller {
         muralRecado.setRecado(recado);
         muralRecadoDatabase.create(muralRecado);
         return true;
+    }
+
+    private boolean registraUsuario() {
+        pessoa = new Pessoa();
+
+        // Validação de nome
+        String nome = JOptionPane.showInputDialog("Digite seu nome:", gerador.gerarNome());
+        if (!ValidaInput.string(nome)) {
+            return false; // Volta ao menu se cancelar ou fechar
+        }
+        pessoa.setNome(nome);
+
+        // Validação de telefone
+        String telefone = JOptionPane.showInputDialog("Digite seu telefone:", gerador.gerarTelefone());
+        if (!ValidaInput.string(telefone)) {
+            return false; // Volta ao menu se cancelar ou fechar
+        }
+        pessoa.setTelefone(telefone);
+
+        // Validação de nascimento
+        String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd/MM/yyyy):", gerador.gerarDataNascimento());
+        if (!ValidaInput.string(nascimento)) {
+            return false; // Volta ao menu se cancelar ou fechar
+        }
+        try {
+            pessoa.setNascimento(utils.formatDate(nascimento));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Data inválida");
+            return false;
+        }
+
+        usuario = new Usuario();
+
+        String login = JOptionPane.showInputDialog("Digite o login do usuário:");
+        if (!ValidaInput.string(login)) {
+            return false; // Volta ao menu se cancelar ou fechar
+        }
+        usuario.setLogin(login);
+
+        String senha = JOptionPane.showInputDialog("Digite a senha do usuário:");
+        if (!ValidaInput.string(senha)) {
+            return false; // Volta ao menu se cancelar ou fechar
+        }
+        usuario.setSenha(senha);
+
+        String tipo = JOptionPane.showInputDialog("Digite o tipo do usuário (0 - Administrador | 1 - Usuario):", "1");
+        if (!ValidaInput.string(tipo) || !ValidaInput.stringEhInt(tipo) || (!"0".equals(tipo) && !"1".equals(tipo))) {
+            return false; // Volta ao menu se cancelar ou fechar
+        }
+        todosUsuarios = usuariosDatabase.getAll();
+        for (Usuario u : todosUsuarios) {
+            if (u.getTipo() == 0) {
+                JOptionPane.showMessageDialog(null, "Já existe Administrador cadastrado", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+                return false;
+            }
+        }
+        usuario.setTipo(Integer.parseInt(tipo));
+        if (usuario.getTipo() == 0) {
+            usuario.setAdmin(true);
+        }
+        pessoasDatabase.create(pessoa);
+        pessoa = pessoasDatabase.getById(pessoa.getID());
+        usuario.setPessoa(pessoa);
+
+        // Criar usuário no banco de dados
+        usuariosDatabase.create(usuario);
+
+        JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
+        return false;
     }
 }
