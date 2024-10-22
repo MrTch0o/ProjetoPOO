@@ -704,7 +704,11 @@ public class Controller {
                     return; // Volta ao menu se cancelar ou fechar
                 }
                 familia.setNomeFamilia(nomeFamilia);
-                // Vincula várias pessoas à família até que o usuário cancele
+
+// Variável para controlar se o primeiro membro já foi adicionado
+                boolean primeiroMembro = true;
+
+// Vincula várias pessoas à família até que o usuário cancele
                 while (true) {
                     String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para vincular à família (ou clique Cancelar para terminar):");
                     if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) {
@@ -721,31 +725,20 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem convite vinculado.");
                         continue; // Pede outro ID se a pessoa já for um convidado
                     }
-                    // Cria um novo convidado e associa à família se for primeiro integrante, gera codigoAcesso.
+
+                    // Cria um novo convidado e associa à família
                     convidado = new Convidado();
                     convidado.setPessoa(pessoa);
                     convidado.setFamilia(familia);
                     parentesco = "familia - " + familia.getNomeFamilia();
                     convidado.setParentesco(parentesco);
-                    if (count == 0) {
-                        String acessoF = "cf" + familia.getDataCriacao();
-                        String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
-                        familia.setAcesso(acessoFormatadoF);
-                        count++;
-                    } else {
-                        familia.setAcesso(null);
-                    }
-                    //familia.setAcesso("conviteFamilia"); //definir metodo de acesso da familia
+                    String acessoF = "cf" + familia.getDataCriacao();
+                    String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
+                    familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
                     // Salva o convidado no banco de dados
                     convidadosDatabase.create(convidado);
                 }
-                todosConvidados = convidadosDatabase.getAll();
-                int count = 0;
-                for (Convidado c : todosConvidados){
-                    if(c.getFamilia() == familia){
-                        familia.set
-                    }
-                }
+
                 JOptionPane.showMessageDialog(null, "Convidados familiares incluídos com sucesso!");
                 return;
 
@@ -1462,15 +1455,78 @@ public class Controller {
                     }
                     for (Convidado c : todosConvidados) {
                         Familia f = c.getFamilia();
-                        if (codigoAcesso.equals(f.getAcesso()) && usuario.getPessoa() == c.getPessoa()) {
+                        if (codigoAcesso.equals(f.getAcesso())) {
+                            // Se for um convite individual
                             if ("ci".equals(f.getAcesso().substring(0, 2))) {
-                                System.out.println("convite individual encontrado" + f.getAcesso());
-                                JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
+                                if (c.isConfirmado()) {
+                                    JOptionPane.showMessageDialog(null, "O convidado já confirmou a presença!");
+                                    return;
+                                }
+
+                                pessoa = c.getPessoa();
+                                String detalhesPessoa = pessoa.toString();
+                                confirmacao = JOptionPane.showConfirmDialog(null, detalhesPessoa, "Confirmação de Presença", JOptionPane.YES_NO_OPTION);
+
+                                if (confirmacao == JOptionPane.YES_OPTION) {
+                                    c.setConfirmado(true); // Atualiza a confirmação
+                                    c.setDataModificacao(); // Atualiza a data de modificação
+                                    convidadosDatabase.update(c); // Salva no banco de dados
+                                    JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Confirmação de presença cancelada.");
+                                }
                                 return;
+
+                                // Se for um convite de família
                             } else if ("cf".equals(f.getAcesso().substring(0, 2))) {
-                                System.out.println("convite familia encontrado" + f.getAcesso());
-                                JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
-                                return;
+                                // Mostrar todos os membros da família
+                                String membrosFamilia = "";
+                                for (Convidado membro : todosConvidados) {
+                                    if (membro.getFamilia().equals(f)) {
+                                        membrosFamilia += membro.getPessoa().toString() + "\n";
+                                    }
+                                }
+
+                                String pessoaIdConfirmar = JOptionPane.showInputDialog(null, "Membros da família:\n" + membrosFamilia + "\nDigite o ID da pessoa que deseja confirmar a presença:");
+                                if (!ValidaInput.stringEhInt(pessoaIdConfirmar)) {
+                                    JOptionPane.showMessageDialog(null, "ID inválido. Tente novamente.");
+                                    return;
+                                }
+
+                                int idConfirmar = Integer.parseInt(pessoaIdConfirmar);
+                                Convidado convidadoConfirmar = null;
+
+                                // Busca o convidado pelo ID
+                                for (Convidado membro : todosConvidados) {
+                                    if (membro.getPessoa().getID() == idConfirmar && membro.getFamilia().equals(f)) {
+                                        convidadoConfirmar = membro;
+                                        break;
+                                    }
+                                }
+
+                                if (convidadoConfirmar == null) {
+                                    JOptionPane.showMessageDialog(null, "Membro da família não encontrado.");
+                                    return;
+                                }
+
+                                // Verifica se o convidado já confirmou
+                                if (convidadoConfirmar.isConfirmado()) {
+                                    JOptionPane.showMessageDialog(null, "Este membro da família já confirmou a presença.");
+                                    return;
+                                }
+
+                                String detalhesPessoa = convidadoConfirmar.getPessoa().toString();
+                                confirmacao = JOptionPane.showConfirmDialog(null, detalhesPessoa, "Confirmação de Presença", JOptionPane.YES_NO_OPTION);
+                                if (confirmacao == JOptionPane.YES_OPTION) {
+                                    convidadoConfirmar.setConfirmado(true); // Atualiza a confirmação
+                                    convidadoConfirmar.setDataModificacao(); // Atualiza a data de modificação
+                                    convidadosDatabase.update(convidadoConfirmar); // Salva no banco de dados
+                                    JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o membro da família com ID: " + convidadoConfirmar.getID());
+                                    return;
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Confirmação de presença cancelada.");
+                                    return;
+                                }
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "ID do convidado inválido. Tente novamente.");
