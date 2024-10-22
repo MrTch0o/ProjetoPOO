@@ -1447,7 +1447,6 @@ public class Controller {
                     }
                     todosConvidados = convidadosDatabase.getAll();
                     todosUsuarios = usuariosDatabase.getAll();
-
                     for (Usuario u : todosUsuarios) {
                         if (u.isLogado()) {
                             usuario = u;
@@ -1528,8 +1527,6 @@ public class Controller {
                                     return;
                                 }
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "ID do convidado inválido. Tente novamente.");
                         }
                     }
                     return;
