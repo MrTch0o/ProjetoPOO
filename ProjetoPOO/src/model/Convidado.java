@@ -77,8 +77,6 @@ public class Convidado extends Identifiable{
         return "CONVIDADO => | id = " + super.getID() + "| pessoaId = " + pessoa.getID() + " | parentesco = " + parentesco + " | confirmado = " + confirmado 
                 + " | dataCriacao = " + dataCriacao + " | dataModificacao = " + dataModificacao + "\n| familiaId = " + familia.toString();
     }
-    
-    
 }
 
 

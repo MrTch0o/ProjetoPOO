@@ -682,7 +682,7 @@ public class Controller {
                 convidado.setPessoa(pessoa);
                 familia.setNomeFamilia("individual");
                 String acessoI = "ci" + familia.getDataCriacao();
-                String acessoFormatadoI = acessoI.substring(acessoI.length() - 6);
+                String acessoFormatadoI = "ci" + acessoI.substring(acessoI.length() - 6);
                 familia.setAcesso(acessoFormatadoI); //definir como os convidados vao acessar 
                 convidado.setFamilia(familia);
                 String parentesco = JOptionPane.showInputDialog("Digite o parentesco do convidado (Pai, Mãe, Avô, etc...):");
@@ -704,7 +704,6 @@ public class Controller {
                     return; // Volta ao menu se cancelar ou fechar
                 }
                 familia.setNomeFamilia(nomeFamilia);
-
                 // Vincula várias pessoas à família até que o usuário cancele
                 while (true) {
                     String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para vincular à família (ou clique Cancelar para terminar):");
@@ -722,18 +721,30 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem convite vinculado.");
                         continue; // Pede outro ID se a pessoa já for um convidado
                     }
-                    // Cria um novo convidado e associa à família
+                    // Cria um novo convidado e associa à família se for primeiro integrante, gera codigoAcesso.
                     convidado = new Convidado();
                     convidado.setPessoa(pessoa);
                     convidado.setFamilia(familia);
-                    parentesco = "familia" + familia.getNomeFamilia();
+                    parentesco = "familia - " + familia.getNomeFamilia();
                     convidado.setParentesco(parentesco);
-                    String acessoF = "cf" + familia.getDataCriacao();
-                    String acessoFormatadoF = acessoF.substring(acessoF.length() - 6);
-                    familia.setAcesso(acessoFormatadoF);
-                    familia.setAcesso("conviteFamilia"); //definir metodo de acesso da familia
+                    if (count == 0) {
+                        String acessoF = "cf" + familia.getDataCriacao();
+                        String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
+                        familia.setAcesso(acessoFormatadoF);
+                        count++;
+                    } else {
+                        familia.setAcesso(null);
+                    }
+                    //familia.setAcesso("conviteFamilia"); //definir metodo de acesso da familia
                     // Salva o convidado no banco de dados
                     convidadosDatabase.create(convidado);
+                }
+                todosConvidados = convidadosDatabase.getAll();
+                int count = 0;
+                for (Convidado c : todosConvidados){
+                    if(c.getFamilia() == familia){
+                        familia.set
+                    }
                 }
                 JOptionPane.showMessageDialog(null, "Convidados familiares incluídos com sucesso!");
                 return;
@@ -1437,13 +1448,33 @@ public class Controller {
 
                 case 2: //confirmar presença
                     // Método de Confirmar Presença
-                    String idConvidado = JOptionPane.showInputDialog("Digite o ID do convidado:");
+                    String codigoAcesso = JOptionPane.showInputDialog("Digite o Codigo de acesso do Convite:");
+                    if (!ValidaInput.string(codigoAcesso)) {
+                        return;
+                    }
+                    todosConvidados = convidadosDatabase.getAll();
+                    todosUsuarios = usuariosDatabase.getAll();
 
-                    if (idConvidado != null && !idConvidado.isEmpty()) {
-                        // Lógica para confirmar presença (armazenar ou marcar a presença)
-                        JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + idConvidado);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "ID do convidado inválido. Tente novamente.");
+                    for (Usuario u : todosUsuarios) {
+                        if (u.isLogado()) {
+                            usuario = u;
+                        }
+                    }
+                    for (Convidado c : todosConvidados) {
+                        Familia f = c.getFamilia();
+                        if (codigoAcesso.equals(f.getAcesso()) && usuario.getPessoa() == c.getPessoa()) {
+                            if ("ci".equals(f.getAcesso().substring(0, 2))) {
+                                System.out.println("convite individual encontrado" + f.getAcesso());
+                                JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
+                                return;
+                            } else if ("cf".equals(f.getAcesso().substring(0, 2))) {
+                                System.out.println("convite familia encontrado" + f.getAcesso());
+                                JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
+                                return;
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "ID do convidado inválido. Tente novamente.");
+                        }
                     }
                     return;
             }
@@ -1453,11 +1484,6 @@ public class Controller {
 //FIM MENU CONVIDADO
     private boolean deixarRecado() throws HeadlessException {
         muralRecado = new MuralRecado();
-//        String nome = JOptionPane.showInputDialog("Digite seu Nome:", gerador.gerarNome());
-//        if (!ValidaInput.string(nome)) {
-//            return false;
-//        }
-//        muralRecado.setNome(nome);
         String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
                 "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
         if (!ValidaInput.string(recado)) {
