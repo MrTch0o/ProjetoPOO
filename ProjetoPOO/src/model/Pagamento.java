@@ -92,9 +92,8 @@ public class Pagamento extends Identifiable {
 
     @Override
     public String toString() {
-        return "PAGAMENTO => | id = "+super.getID() + " | data = " + utils.formatDateToString(data) + " | valor = " + valor + " | tipo = " + tipo + " | parcela = " + parcela + 
-                " | descricao = " + descricao + " | dataCriacao = " + dataCriacao + " | dataModificacao=" + dataModificacao + "\n" +
-                " | "+ fornecedor.toString();
+        return "PAGAMENTO => | id: " + super.getID() + " | data: " + utils.formatDateToString(data) + "| fornecedor: " + fornecedor.getID() + " | valor: "
+                + valor + " | tipo: " + tipo + " | parcela: " + parcela + " | descricao: " + descricao + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
 
 }

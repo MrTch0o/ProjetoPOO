@@ -41,6 +41,6 @@ public class Familia extends Identifiable {
 
     @Override
     public String toString() {
-        return "FAMILIA => | nomeFamilia = " + nomeFamilia + " | acesso = " + acesso + " | dataCriacao = " + dataCriacao + " | dataModificacao = " + dataModificacao + " |";
+        return "FAMILIA => | id: " + super.getID() + "nomeFamilia: " + nomeFamilia + " | acesso: " + acesso + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
 }

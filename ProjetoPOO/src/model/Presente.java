@@ -86,7 +86,7 @@ public class Presente extends Identifiable {
     
     @Override
     public String toString() {
-        return "PRESENTE => | ID: " + super.getID() + " | NOME: " + nome + " | VALOR: " + String.format("%.2f", valor) + " | COTAS: " + cotas + "| VALOR COTA: " + String.format("%.2f", valorCota) + "| DC: " + dataCriacao + " | DM: " + dataModificacao + " |";
+        return "PRESENTE => | id: " + super.getID() + " | nome: " + nome + " | valor: " + String.format("%.2f", valor) + " | cotas: " + cotas + "| valorCota: " + String.format("%.2f", valorCota) + "| dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
     
 }

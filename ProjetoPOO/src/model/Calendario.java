@@ -87,8 +87,8 @@ public class Calendario extends Identifiable {
 
     @Override
     public String toString() {
-        return "CALENDARIO => | id = " + super.getID() + " | dataEvento = " + utils.formatDateToString(dataEvento) + " | titulo = " + titulo + " | descricao = " + descricao 
-                + " | dataCriacao = " + dataCriacao + " | dataModificacao = " + dataModificacao + " | pagamentoId = " + pagamento.getID() + " |";
+        return "CALENDARIO => | id: " + super.getID() + " | pagamentoId = " + pagamento.getID() + " | dataEvento: " + utils.formatDateToString(dataEvento) + " | titulo: " + titulo + " | descricao: " + descricao 
+                + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
 
 }

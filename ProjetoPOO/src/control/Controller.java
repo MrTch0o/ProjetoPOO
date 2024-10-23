@@ -271,7 +271,6 @@ public class Controller {
                 return;
 
             case 1: // alterar
-                // ID da pessoa a ser alterada
                 todasPessoas = pessoasDatabase.getAll();
                 String strPessoaId = "Digite o ID da pessoa que deseja alterar:" + "\n";
                 for (Pessoa p : todasPessoas) {
@@ -318,8 +317,12 @@ public class Controller {
                 return;
 
             case 2: // remover
-                // Confirmação de remoção
-                String idRemover = JOptionPane.showInputDialog("Digite o ID da pessoa que deseja remover:");
+                todasPessoas = pessoasDatabase.getAll();
+                strPessoaId = "Digite o ID da pessoa que deseja remover:" + "\n";
+                for (Pessoa p : todasPessoas) {
+                    strPessoaId += p.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) {
                     return;
                 }
