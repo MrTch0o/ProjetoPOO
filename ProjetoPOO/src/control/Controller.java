@@ -71,8 +71,12 @@ public class Controller {
                     controlForm = true;
                     break;
                 case 1:
-                    menuInicio.menuNaoLogado();
-                    return;
+                    while (controlForm) {
+                        int escolhaPerfil = menuInicio.menuNaoLogado();
+                        perfilNaoLogado(escolhaPerfil);
+                    }
+                    controlForm = true;
+                    break;
                 case 2: // Função de registro aqui
                     while (controlForm) {
                         controlForm = registraUsuario();
@@ -1535,6 +1539,111 @@ public class Controller {
     }
 
 //FIM MENU CONVIDADO
+//INICIO MENU NAO LOGADO
+    public void perfilNaoLogado(int escolhaNaoLogado) {
+        if (escolhaNaoLogado == 2 || escolhaNaoLogado == -1) {
+            controlForm = false;
+            return;
+        }
+        while (controlForm) {
+            switch (escolhaNaoLogado) {
+                case 0:
+
+                    todosPresentes = presentesDatabase.getAll();
+                    String strPresentes = "";
+
+                    if (todosPresentes.length > 0) {
+                        for (int i = 0; i < todosPresentes.length; i++) {
+                            strPresentes += todosPresentes[i].toStringConvidado() + "\n";
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
+                    }
+
+                    String escolha = JOptionPane.showInputDialog(null, strPresentes + "\nEscolha o número do presente que deseja dar:", "Presentes Disponíveis", JOptionPane.QUESTION_MESSAGE);
+
+                    if (!ValidaInput.string(escolha) || !ValidaInput.stringEhInt(escolha)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+
+                    int numeroPresente = Integer.parseInt(escolha) - 1;
+                    if (numeroPresente < 0 || numeroPresente >= todosPresentes.length) {
+                        JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
+                        return;
+                    }
+                    presente = presentesDatabase.getById(numeroPresente + 1);
+
+                    // Solicita quantas cotas o usuário deseja dar
+                    String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
+                    if (!ValidaInput.string(cotas) || !ValidaInput.stringEhInt(cotas)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+
+                    int cotasInt = Integer.parseInt(cotas);
+                    if (cotasInt < 0 || cotasInt > presente.getCotas()) {
+                        JOptionPane.showMessageDialog(null, "Cotas inválido! Escolha novamente.");
+                        return;
+                    }
+                    int cotasDisponiveis = presente.getCotas();
+
+                    // Confirmação
+                    int confirmacao = JOptionPane.showConfirmDialog(null,
+                            "Você escolheu dar " + cotasInt + " cotas do presente " + presente.getNome()
+                            + "\nCotas disponíveis: " + cotasDisponiveis + "\nConfirmar?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacao == JOptionPane.YES_OPTION) {
+                        presente.setCotas(cotasDisponiveis - cotasInt);
+                        presentesDatabase.update(presente);
+                        presenteRecebido = new PresenteRecebido();
+                        presenteRecebido.setPresente(presente);
+                        presenteRecebido.setQtdCotas(cotasInt);
+                        pessoa = new Pessoa();
+                        String nome = JOptionPane.showInputDialog("Digite seu nome:", gerador.gerarNome());
+                        if (!ValidaInput.string(nome)) {
+                            return; // Volta ao menu se cancelar ou fechar
+                        }
+                        pessoa.setNome(nome);
+                        presenteRecebido.setPessoa(pessoa);
+                        presentesRecebidosDatabase.create(presenteRecebido);
+                        JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Presente Cancelado!");
+                    }
+
+                    return;
+
+                case 1:
+                    muralRecado = new MuralRecado();
+                    String nome = JOptionPane.showInputDialog("Digite seu nome:", gerador.gerarNome());
+                    if (!ValidaInput.string(nome)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+                    String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
+                            "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
+                    if (!ValidaInput.string(recado)) {
+                        return;
+                    }
+                    if (recado.length() > 4000) {
+                        recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
+                    }
+                    muralRecado.setNome(nome);
+                    muralRecado.setRecado(recado);
+                    confirmacao = JOptionPane.showConfirmDialog(null, "Confirma deixar recado?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacao == JOptionPane.YES_OPTION) {
+                        muralRecadoDatabase.create(muralRecado);
+                        JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Falha ao deixar Recado!\n");
+                    }
+                    return;
+
+            }
+
+        }
+    }
+//FIM MENU NAO LOGADO
+
     private boolean deixarRecado() throws HeadlessException {
         muralRecado = new MuralRecado();
         String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",

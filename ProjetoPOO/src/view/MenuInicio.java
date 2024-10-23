@@ -56,14 +56,13 @@ public class MenuInicio {
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
         return escolha;
     }
-    
-      public int menuGerenciarPresentes() {
+
+    public int menuGerenciarPresentes() {
         String[] opcoes = {"Incluir Presente", "Alterar Presente", "Remover Presente", "Visualizar Presentes Cadastrados", "Visualizar Presentes Recebidos", "Voltar"};
         int escolha = JOptionPane.showOptionDialog(null, "Gerenciar Presentes", "Presentes", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
         return escolha;
     }
-    
 
     public int menuGerenciarPagamentos() {
         String[] opcoes = {"Incluir Pagamento", "Alterar Pagamento", "Remover Pagamento", "Verificar Pagamentos ID", "Verificar Todos os Pagamentos", "Voltar"};
@@ -91,87 +90,89 @@ public class MenuInicio {
 
         return escolha;
     }
-    
+
 //FIM MENU CONVIDADO
-    
 //INICIO MENU NAO LOGADO
-    public void menuNaoLogado() {
-        while (true) {
-            String[] opcoes = {"Presentes", "Recados", "Voltar"};
-            int escolha = JOptionPane.showOptionDialog(null, "Menu Não Logado", "Menu", JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+    public int menuNaoLogado() {
 
-            switch (escolha) {
-                case 0:
-                    menuPresentesNaoLogado();
-                    break;
-                case 1:
-                    menuRecadosNaoLogado();
-                    break;
-                case 2:
-                    return; // Volta ao menu anterior
-                default:
-                    JOptionPane.showMessageDialog(null, "Opção inválida.");
-            }
-        }
-    }
-
-    // Menu de Presentes para Não Logado
-    public void menuPresentesNaoLogado() {
-        String[] opcoes = {"Dar Presente", "Ver Presentes", "Voltar"};
-        int escolha = JOptionPane.showOptionDialog(null, "Menu Presentes", "Presentes", JOptionPane.DEFAULT_OPTION,
+        String[] opcoes = {"Dar Presentes", "Deixar Recados", "Voltar"};
+        int escolha = JOptionPane.showOptionDialog(null, "Menu Não Logado", "Menu", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+        return escolha;
 
-        switch (escolha) {
-            case 0:
-                JOptionPane.showMessageDialog(null, "Dando presente.");
-                // Função de dar presente aqui
-                break;
-            case 1:
-                JOptionPane.showMessageDialog(null, "Exibindo lista de presentes.");
-                // Função de exibição de presentes aqui
-                break;
-            case 2:
-                return; // Volta ao menu anterior
-            default:
-                JOptionPane.showMessageDialog(null, "Opção inválida.");
-        }
     }
-
-    // Menu de Recados para Não Logado
-    public void menuRecadosNaoLogado() {
-        String[] opcoes = {"Ver Recados", "Deixar Recado", "Voltar"};
-        int escolha = JOptionPane.showOptionDialog(null, "Menu Recados", "Recados", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
-
-        switch (escolha) {
-            case 0:
-                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
-                // Função de exibição de recados
-                break;
-            case 1:
-                deixarRecadoNaoLogado();
-                break;
-            case 2:
-                return; // Volta ao menu anterior
-            default:
-                JOptionPane.showMessageDialog(null, "Opção inválida.");
-        }
-    }
-
-    // Deixar Recado no Menu Não Logado
-    public void deixarRecadoNaoLogado() {
-        String nome = JOptionPane.showInputDialog("Digite seu nome:");
-        String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
-                "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
-
-        if (recado.length() > 4000) {
-            recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
-        }
-
-        JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
-        // Lógica para armazenar o recado
-    }
-//FIM MENU NAO LOGADO
-
 }
+//            switch (escolha) {
+//                case 0:
+//                    menuPresentesNaoLogado();
+//                    break;
+//                case 1:
+//                    menuRecadosNaoLogado();
+//                    break;
+//                case 2:
+//                    return; // Volta ao menu anterior
+//                default:
+//                    JOptionPane.showMessageDialog(null, "Opção inválida.");
+//            }
+//        }
+//    }
+//
+//    // Menu de Presentes para Não Logado
+//    public void menuPresentesNaoLogado() {
+//        String[] opcoes = {"Dar Presente", "Ver Presentes", "Voltar"};
+//        int escolha = JOptionPane.showOptionDialog(null, "Menu Presentes", "Presentes", JOptionPane.DEFAULT_OPTION,
+//                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+//
+//        switch (escolha) {
+//            case 0:
+//                JOptionPane.showMessageDialog(null, "Dando presente.");
+//                // Função de dar presente aqui
+//                break;
+//            case 1:
+//                JOptionPane.showMessageDialog(null, "Exibindo lista de presentes.");
+//                // Função de exibição de presentes aqui
+//                break;
+//            case 2:
+//                return; // Volta ao menu anterior
+//            default:
+//                JOptionPane.showMessageDialog(null, "Opção inválida.");
+//        }
+//    }
+//
+//    // Menu de Recados para Não Logado
+//    public void menuRecadosNaoLogado() {
+//        String[] opcoes = {"Ver Recados", "Deixar Recado", "Voltar"};
+//        int escolha = JOptionPane.showOptionDialog(null, "Menu Recados", "Recados", JOptionPane.DEFAULT_OPTION,
+//                JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+//
+//        switch (escolha) {
+//            case 0:
+//                JOptionPane.showMessageDialog(null, "Exibindo mural de recados.");
+//                // Função de exibição de recados
+//                break;
+//            case 1:
+//                deixarRecadoNaoLogado();
+//                break;
+//            case 2:
+//                return; // Volta ao menu anterior
+//            default:
+//                JOptionPane.showMessageDialog(null, "Opção inválida.");
+//        }
+//    }
+//
+//    // Deixar Recado no Menu Não Logado
+//    public void deixarRecadoNaoLogado() {
+//        String nome = JOptionPane.showInputDialog("Digite seu nome:");
+//        String recado = JOptionPane.showInputDialog(null, "Digite seu recado (até 4000 caracteres):",
+//                "Deixar Recado", JOptionPane.PLAIN_MESSAGE);
+//
+//        if (recado.length() > 4000) {
+//            recado = recado.substring(0, 4000); // Trunca o recado para 4000 caracteres
+//        }
+//
+//        JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n" + recado);
+//        // Lógica para armazenar o recado
+//    }
+////FIM MENU NAO LOGADO
+//
+//}
