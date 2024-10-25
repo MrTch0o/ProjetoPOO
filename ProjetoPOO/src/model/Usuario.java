@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.time.LocalDateTime;
@@ -85,7 +81,7 @@ public class Usuario extends Identifiable{
 
     @Override
     public String toString() {
-        return "USUARIO => | id: " + super.getID() + "| tipo: " + tipo + "| login: " + login + "| senha: " + senha + "idPessoa: " + pessoa.getID() + "| dc: " + dataCriacao + "| dm: " + dataModificacao + " |";
+        return "USUARIO => | id: " + super.getID() + " | tipo: " + tipo + " | login: " + login + " | senha: " + senha + " | idPessoa: " + pessoa.getID() + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
     
 }

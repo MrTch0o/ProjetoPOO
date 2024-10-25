@@ -66,7 +66,7 @@ public class Convidado extends Identifiable{
 
     @Override
     public String toString() {
-        return "CONVIDADO => | id: " + super.getID() + "| pessoaId: " + pessoa.getID() + " | familiaId: " + familia.getID() + " | parentesco: " + parentesco + " | confirmado: " + confirmado  
+        return "CONVIDADO => | id: " + super.getID() + " | pessoaId: " + pessoa.getID() + " | codigoAcesso: " + familia.getAcesso() + " | familiaId: " + familia.getID() + " | parentesco: " + parentesco + " | confirmado: " + confirmado  
                 + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
 }

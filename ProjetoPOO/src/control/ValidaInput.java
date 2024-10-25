@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package control;
 
-/**
- *
- * @author DEVENG
- */
 public class ValidaInput {
 
      // Valida se a string não é nula ou contém somente espaços em branco

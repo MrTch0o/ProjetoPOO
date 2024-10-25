@@ -1,15 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package control;
 
 import java.util.Random;
 
-/**
- *
- * @author DEVENG
- */
 public class Gerador {
 
     // Arrays de nomes, telefones e datas de nascimento
@@ -55,17 +47,6 @@ public class Gerador {
         return DATAS_NASCIMENTO[indiceAleatorio];
     }
 
-    /*   // Exemplo de uso da classe
-    public static void main(String[] args) {
-        // Gera e imprime um nome, telefone e data de nascimento aleatórios
-        for (int i = 0; i < 5; i++) {
-            System.out.println("Nome aleatório: " + gerarNome());
-            System.out.println("Telefone aleatório: " + gerarTelefone());
-            System.out.println("Data de Nascimento aleatória: " + gerarDataNascimento());
-            System.out.println("------");
-        }
-    }
-     */
     // Lista de presentes, suas cotas e valores estimados
     private static final String[] PRESENTES = {
         "Jogo de Panelas", "Conjunto de Copos", "Aparelho de Jantar", "Churrasqueira", "Batedeira",
@@ -75,18 +56,20 @@ public class Gerador {
         "Conjunto de Xícaras", "Sanduicheira", "Processador de Alimentos", "Ventilador", "Ar Condicionado",
         "Purificador de Água", "Lava-Roupas", "TV LED", "Home Theater", "Geladeira"
     };
-
+    
+    // Cotas para cada presente
     private static final int[] COTAS = {
         10, 8, 12, 6, 15, 10, 5, 7, 8, 6,
         12, 10, 5, 7, 8, 6, 12, 10, 5, 7,
         8, 10, 12, 6, 15, 10, 12, 8, 7, 5
-    }; // Cotas para cada presente
+    }; 
 
+    //Valores estimados para cada presente
     private static final double[] VALORES_ESTIMADOS = {
         300.00, 150.00, 500.00, 400.00, 200.00, 250.00, 180.00, 600.00, 120.00, 100.00,
         80.00, 90.00, 60.00, 110.00, 70.00, 150.00, 1200.00, 300.00, 150.00, 50.00,
         40.00, 100.00, 400.00, 200.00, 1500.00, 250.00, 1600.00, 2000.00, 1200.00, 3000.00
-    }; //Valores estimados para cada presente
+    }; 
 
     public int getIndicePresente() {
         int indiceAleatorio = RANDOM.nextInt(PRESENTES.length);

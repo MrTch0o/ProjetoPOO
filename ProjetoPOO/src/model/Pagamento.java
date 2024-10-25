@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.time.LocalDate;
@@ -9,10 +5,6 @@ import java.time.LocalDateTime;
 import model.dao.Identifiable;
 import model.dao.Utils;
 
-/**
- *
- * @author Gabriel
- */
 public class Pagamento extends Identifiable {
     Utils utils = new Utils();
     private LocalDate data;

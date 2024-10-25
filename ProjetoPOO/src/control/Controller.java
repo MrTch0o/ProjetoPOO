@@ -37,6 +37,7 @@ public class Controller {
     Usuario[] todosUsuarios;
     Fornecedor[] todosFornecedores;
     Convidado[] todosConvidados;
+    Familia[] todasFamilias;
     Pagamento[] todosPagamentos;
     Calendario[] todosCalendarios;
     Presente[] todosPresentes;
@@ -46,6 +47,7 @@ public class Controller {
     Database<Usuario> usuariosDatabase = new Database<>(new Usuario[0]);
     Database<Fornecedor> fornecedoresDatabase = new Database<>(new Fornecedor[0]);
     Database<Convidado> convidadosDatabase = new Database<>(new Convidado[0]);
+    Database<Familia> familiasDatabase = new Database<>(new Familia[0]);
     Database<Pagamento> pagamentosDatabase = new Database<>(new Pagamento[0]);
     Database<Calendario> calendariosDatabase = new Database<>(new Calendario[0]);
     Database<Presente> presentesDatabase = new Database<>(new Presente[0]);
@@ -699,6 +701,7 @@ public class Controller {
                 convidado.setParentesco(parentesco);
 
                 // Criar usuário no banco de dados
+                familiasDatabase.create(familia);
                 convidadosDatabase.create(convidado);
 
                 JOptionPane.showMessageDialog(null, "Convidado incluído com sucesso!");
@@ -711,11 +714,8 @@ public class Controller {
                     return; // Volta ao menu se cancelar ou fechar
                 }
                 familia.setNomeFamilia(nomeFamilia);
-
-// Variável para controlar se o primeiro membro já foi adicionado
-                boolean primeiroMembro = true;
-
-// Vincula várias pessoas à família até que o usuário cancele
+                familiasDatabase.create(familia);
+                // Vincula várias pessoas à família até que o usuário cancele
                 while (true) {
                     String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para vincular à família (ou clique Cancelar para terminar):");
                     if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) {
@@ -754,10 +754,16 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
+                try{
                 convidado = convidadosDatabase.getById(Integer.parseInt(idRemover));
+                familia = convidado.getFamilia();
+                } catch (NullPointerException e){
+                  return;
+                }
                 if (convidado != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o convidado com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
+                        familiasDatabase.delete(familia.getID());
                         convidadosDatabase.delete(Integer.parseInt(idRemover));
                         JOptionPane.showMessageDialog(null, "Convidado removido com sucesso!");
                     } else {
@@ -773,12 +779,13 @@ public class Controller {
                     return;
                 }
                 todosConvidados = convidadosDatabase.getAll();
-                Familia f;
+                todasFamilias = familiasDatabase.getAll();
+                //Familia f;
                 int qtdConvites = 0;
                 int qtdRemovidos = 0;
                 for (Convidado c : todosConvidados) {
-                    f = c.getFamilia();
-                    if (familiaRemover.equals(f.getNomeFamilia())) {
+                    familia = c.getFamilia();
+                    if (familiaRemover.equals(familia.getNomeFamilia())) {
                         qtdConvites++;
                     }
                 }
@@ -786,8 +793,8 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Não encontrado convite para família " + familiaRemover);
                 } else {
                     for (Convidado c : todosConvidados) {
-                        f = c.getFamilia();
-                        if (familiaRemover.equals(f.getNomeFamilia())) {
+                        familia = c.getFamilia();
+                        if (familiaRemover.equals(familia.getNomeFamilia())) {
                             int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o convidado com ID " + c.getID() + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                             if (confirmacao == JOptionPane.YES_OPTION) {
                                 convidadosDatabase.delete(c.getID());
@@ -800,6 +807,14 @@ public class Controller {
                     }
                     if (qtdRemovidos > 0) {
                         JOptionPane.showMessageDialog(null, "Foram removidos " + qtdRemovidos + " convites da família " + familiaRemover + " de um total de " + qtdConvites + " convites.");
+                    }
+                    if (qtdRemovidos == qtdConvites) {
+                        for (Familia f : todasFamilias) {
+                            if (familiaRemover.equals(f.getNomeFamilia())) {
+                                familia = f;
+                                JOptionPane.showMessageDialog(null, "Familia: " + familia.getNomeFamilia() + " removido com sucesso. ");
+                            }
+                        }
                     }
                 }
                 return;

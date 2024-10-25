@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.time.LocalDate;
@@ -9,11 +5,8 @@ import java.time.LocalDateTime;
 import model.dao.Identifiable;
 import model.dao.Utils;
 
-/**
- *
- * @author DEVENG
- */
 public class Calendario extends Identifiable {
+
     Utils utils = new Utils();
     private LocalDate dataEvento;
     private String titulo;
@@ -82,12 +75,10 @@ public class Calendario extends Identifiable {
     public void setPagamento(Pagamento pagamento) {
         this.pagamento = pagamento;
     }
-    
-    
 
     @Override
     public String toString() {
-        return "CALENDARIO => | id: " + super.getID() + " | pagamentoId = " + pagamento.getID() + " | dataEvento: " + utils.formatDateToString(dataEvento) + " | titulo: " + titulo + " | descricao: " + descricao 
+        return "CALENDARIO => | id: " + super.getID() + ((pagamento != null) ? " | pagamentoId = " + String.valueOf(pagamento.getID()) : "") + " | dataEvento: " + utils.formatDateToString(dataEvento) + " | titulo: " + titulo + " | descricao: " + descricao
                 + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
 
