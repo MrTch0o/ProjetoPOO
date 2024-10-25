@@ -435,7 +435,6 @@ public class Controller {
                 return;
 
             case 1: // alterar
-
                 todosUsuarios = usuariosDatabase.getAll();
                 String strUsuarioId = "Digite o ID do usuário:" + "\n";
                 for (Usuario p : todosUsuarios) {
@@ -478,7 +477,12 @@ public class Controller {
                 return;
 
             case 2: // remover
-                String idRemover = JOptionPane.showInputDialog("Digite o ID do usuário:");
+                todosUsuarios = usuariosDatabase.getAll();
+                strUsuarioId = "Digite o ID do usuário:" + "\n";
+                for (Usuario p : todosUsuarios) {
+                    strUsuarioId += p.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strUsuarioId, "Usuários", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -532,9 +536,13 @@ public class Controller {
         switch (escolhaFornecedor) {
 
             case 0: //incluir
-
                 fornecedor = new Fornecedor();
-                String fornecedorId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar fornecedor:");
+                todasPessoas = pessoasDatabase.getAll();
+                String strPessoaId = "Digite o ID da pessoa para criar fornecedor:" + "\n";
+                for (Pessoa p : todasPessoas) {
+                    strPessoaId += p.toString() + "\n";
+                }
+                String fornecedorId = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(fornecedorId) || !ValidaInput.stringEhInt(fornecedorId)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -571,12 +579,16 @@ public class Controller {
                 // Criar usuário no banco de dados
                 fornecedoresDatabase.create(fornecedor);
 
-                JOptionPane.showMessageDialog(null, "Fornecedros incluído com sucesso!");
+                JOptionPane.showMessageDialog(null, "Fornecedor incluído com sucesso!");
                 return;
 
             case 1: //alterar
-
-                String idAlterar = JOptionPane.showInputDialog("Digite o ID do fornecedor:");
+                todosFornecedores = fornecedoresDatabase.getAll();
+                String strFornecedorId = "Digite o ID do fornecedor:" + "\n";
+                for (Fornecedor f : todosFornecedores) {
+                    strFornecedorId += f.toString() + "\n";
+                }
+                String idAlterar = JOptionPane.showInputDialog(null, strFornecedorId, "Fornecedores", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -611,7 +623,12 @@ public class Controller {
                 return;
 
             case 2: // remover
-                String idRemover = JOptionPane.showInputDialog("Digite o ID do fornecedor:");
+                todosFornecedores = fornecedoresDatabase.getAll();
+                strFornecedorId = "Digite o ID do fornecedor:" + "\n";
+                for (Fornecedor f : todosFornecedores) {
+                    strFornecedorId += f.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strFornecedorId, "Fornecedores", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -672,7 +689,6 @@ public class Controller {
 
         switch (escolhaConvite) {
             case 0://incluir convite individual
-
                 familia = new Familia();
                 convidado = new Convidado();
                 String convidadoId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar convidado:");
