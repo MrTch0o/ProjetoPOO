@@ -2,6 +2,7 @@ package control;
 
 import java.awt.HeadlessException;
 import java.time.LocalDate;
+import java.util.List;
 import javax.swing.JOptionPane;
 import model.Pessoa;
 import model.Usuario;
@@ -33,26 +34,26 @@ public class Controller {
     Presente presente;
     PresenteRecebido presenteRecebido;
     MuralRecado muralRecado;
-    Pessoa[] todasPessoas;
-    Usuario[] todosUsuarios;
-    Fornecedor[] todosFornecedores;
-    Convidado[] todosConvidados;
-    Familia[] todasFamilias;
-    Pagamento[] todosPagamentos;
-    Calendario[] todosCalendarios;
-    Presente[] todosPresentes;
-    PresenteRecebido[] todosPresentesRecebido;
-    MuralRecado[] todosMuralRecado;
-    Database<Pessoa> pessoasDatabase = new Database<>(new Pessoa[0]);
-    Database<Usuario> usuariosDatabase = new Database<>(new Usuario[0]);
-    Database<Fornecedor> fornecedoresDatabase = new Database<>(new Fornecedor[0]);
-    Database<Convidado> convidadosDatabase = new Database<>(new Convidado[0]);
-    Database<Familia> familiasDatabase = new Database<>(new Familia[0]);
-    Database<Pagamento> pagamentosDatabase = new Database<>(new Pagamento[0]);
-    Database<Calendario> calendariosDatabase = new Database<>(new Calendario[0]);
-    Database<Presente> presentesDatabase = new Database<>(new Presente[0]);
-    Database<PresenteRecebido> presentesRecebidosDatabase = new Database<>(new PresenteRecebido[0]);
-    Database<MuralRecado> muralRecadoDatabase = new Database<>(new MuralRecado[0]);
+    List<Pessoa> todasPessoas;
+    List<Usuario> todosUsuarios;
+    List<Fornecedor> todosFornecedores;
+    List<Convidado> todosConvidados;
+    List<Familia> todasFamilias;
+    List<Pagamento> todosPagamentos;
+    List<Calendario> todosCalendarios;
+    List<Presente> todosPresentes;
+    List<PresenteRecebido> todosPresentesRecebido;
+    List<MuralRecado> todosMuralRecado;
+    Database<Pessoa> pessoasDatabase = new Database<>();
+    Database<Usuario> usuariosDatabase = new Database<>();
+    Database<Fornecedor> fornecedoresDatabase = new Database<>();
+    Database<Convidado> convidadosDatabase = new Database<>();
+    Database<Familia> familiasDatabase = new Database<>();
+    Database<Pagamento> pagamentosDatabase = new Database<>();
+    Database<Calendario> calendariosDatabase = new Database<>();
+    Database<Presente> presentesDatabase = new Database<>();
+    Database<PresenteRecebido> presentesRecebidosDatabase = new Database<>();
+    Database<MuralRecado> muralRecadoDatabase = new Database<>();
     Utils utils = new Utils();
     Gerador gerador = new Gerador();
 
@@ -366,7 +367,7 @@ public class Controller {
 
             case 4: // visualizar todos
                 todasPessoas = pessoasDatabase.getAll();
-                if (todasPessoas.length > 0) {
+                if (!todasPessoas.isEmpty()) {
                     String strPessoa = "";
                     for (Pessoa p : todasPessoas) {
                         strPessoa += p.toString() + "\n";
@@ -516,7 +517,7 @@ public class Controller {
 
             case 4: // visualizar todos 
                 todosUsuarios = usuariosDatabase.getAll();
-                if (todosUsuarios.length > 0) {
+                if (!todosUsuarios.isEmpty()) {
                     String strUsuario = "";
                     for (Usuario u : todosUsuarios) {
                         strUsuario += u.toString() + "\n";
@@ -669,7 +670,7 @@ public class Controller {
 
             case 4: // visualizar todos 
                 todosFornecedores = fornecedoresDatabase.getAll();
-                if (todosFornecedores.length > 0) {
+                if (!todosFornecedores.isEmpty()) {
                     String strFornecedores = "";
                     for (Fornecedor f : todosFornecedores) {
                         strFornecedores += f.toString() + "\n";
@@ -848,7 +849,7 @@ public class Controller {
                 }
             case 5:
                 todosConvidados = convidadosDatabase.getAll();
-                if (todosConvidados.length > 0) {
+                if (!todosConvidados.isEmpty()) {
                     String strConvidados = "";
                     for (Convidado c : todosConvidados) {
                         strConvidados += c.toString() + "\n";
@@ -962,10 +963,10 @@ public class Controller {
 
             case 3: // Visualizar Presentes Cadastrados
                 todosPresentes = presentesDatabase.getAll();
-                if (todosPresentes.length > 0) {
+                if (!todosPresentes.isEmpty()) {
                     String strPresentes = "";
-                    for (int i = 0; i < todosPresentes.length; i++) {
-                        strPresentes += todosPresentes[i].toString() + "\n";
+                    for (int i = 0; i < todosPresentes.size(); i++) {
+                        strPresentes += todosPresentes.get(i).toString() + "\n";
                     }
                     JOptionPane.showMessageDialog(null, strPresentes);
                 } else {
@@ -975,7 +976,7 @@ public class Controller {
 
             case 4: // Visualizar Presentes Recebidos
                 todosPresentesRecebido = presentesRecebidosDatabase.getAll();
-                if (todosPresentesRecebido.length > 0) {
+                if (!todosPresentesRecebido.isEmpty()) {
                     String strPresentesRecebidos = "";
                     for (PresenteRecebido pr : todosPresentesRecebido) {
                         strPresentesRecebidos += pr.toString() + "\n";
@@ -1253,7 +1254,7 @@ public class Controller {
                 return;
             case 4:
                 todosPagamentos = pagamentosDatabase.getAll();
-                if (todosPagamentos.length > 0) {
+                if (!todosPagamentos.isEmpty()) {
                     String strPagamentos = "";
                     for (Pagamento p : todosPagamentos) {
                         strPagamentos += p.toString() + "\n";
@@ -1373,7 +1374,7 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
                 }
-                if (todosCalendarios.length > 0) {
+                if (!todosCalendarios.isEmpty()) {
                     String strCalendarios = "";
                     for (Calendario c : todosCalendarios) {
                         if (dH.isEqual(c.getData())) {
@@ -1387,7 +1388,7 @@ public class Controller {
                 return;
             case 4://visualizar calendario
                 todosCalendarios = calendariosDatabase.getAll();
-                if (todosCalendarios.length > 0) {
+                if (!todosCalendarios.isEmpty()) {
                     String strCalendarios = "";
                     for (Calendario c : todosCalendarios) {
                         strCalendarios += c.toString() + "\n";
@@ -1413,9 +1414,9 @@ public class Controller {
                     todosPresentes = presentesDatabase.getAll();
                     String strPresentes = "";
 
-                    if (todosPresentes.length > 0) {
-                        for (int i = 0; i < todosPresentes.length; i++) {
-                            strPresentes += todosPresentes[i].toStringConvidado() + "\n";
+                    if (!todosPresentes.isEmpty()) {
+                        for (int i = 0; i < todosPresentes.size(); i++) {
+                            strPresentes += todosPresentes.get(i).toStringConvidado() + "\n";
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
@@ -1428,7 +1429,7 @@ public class Controller {
                     }
 
                     int numeroPresente = Integer.parseInt(escolha) - 1;
-                    if (numeroPresente < 0 || numeroPresente >= todosPresentes.length) {
+                    if (numeroPresente < 0 || numeroPresente >= todosPresentes.size()) {
                         JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
                         return;
                     }
@@ -1586,9 +1587,9 @@ public class Controller {
                     todosPresentes = presentesDatabase.getAll();
                     String strPresentes = "";
 
-                    if (todosPresentes.length > 0) {
-                        for (int i = 0; i < todosPresentes.length; i++) {
-                            strPresentes += todosPresentes[i].toStringConvidado() + "\n";
+                    if (!todosPresentes.isEmpty()) {
+                        for (int i = 0; i < todosPresentes.size(); i++) {
+                            strPresentes += todosPresentes.get(i).toStringConvidado() + "\n";
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
@@ -1601,7 +1602,7 @@ public class Controller {
                     }
 
                     int numeroPresente = Integer.parseInt(escolha) - 1;
-                    if (numeroPresente < 0 || numeroPresente >= todosPresentes.length) {
+                    if (numeroPresente < 0 || numeroPresente >= todosPresentes.size()) {
                         JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
                         return;
                     }
