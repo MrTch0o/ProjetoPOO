@@ -1,9 +1,12 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import model.dao.Database;
 import model.dao.Identifiable;
 
-public class Fornecedor extends Identifiable {
+public class Fornecedor extends Identifiable implements Database.RowMapper<Fornecedor> {
 
     private String razaoSocial;
     private String cpfCnpj;
@@ -47,6 +50,10 @@ public class Fornecedor extends Identifiable {
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
+    
+     public void setDataCriacao (LocalDateTime date) {
+        this.dataCriacao = date;
+    }
 
     public LocalDateTime getDataCriacao() {
         return this.dataCriacao;
@@ -54,6 +61,10 @@ public class Fornecedor extends Identifiable {
 
     public void setDataModificacao() {
         this.dataModificacao = LocalDateTime.now();
+    }
+    
+    public void setDataModificacao(LocalDateTime date) {
+        this.dataModificacao = date;
     }
 
     public LocalDateTime getDataModificacao() {
@@ -63,8 +74,33 @@ public class Fornecedor extends Identifiable {
     @Override
     public String toString() {
         return "FORNECEDOR => | id: " + super.getID() + " | razaoSocial: " + razaoSocial + " | cpfCnpj: " + cpfCnpj + " | telefone: " + telefone + " | pessoaId: " + pessoa.getID()
-                + " | dc: " + dataCriacao + " | dm: " + dataModificacao +  " |";
+                + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
-    
-    
+
+    @Override
+    public Fornecedor mapRow(ResultSet rs) throws SQLException {
+        Fornecedor fornecedor = new Fornecedor();
+        fornecedor.setID(rs.getInt("id"));
+        fornecedor.setRazaoSocial(rs.getString("razaosocial"));
+        fornecedor.setCpfCnpj(rs.getString("cpfcnpj"));
+        fornecedor.setTelefone(rs.getString("telefone"));
+        fornecedor.setDataCriacao(rs.getTimestamp("datacriacao").toLocalDateTime());
+        fornecedor.setDataModificacao(rs.getTimestamp("datamodificacao").toLocalDateTime());
+
+        // Obtém o ID da pessoa associado ao fornecedor
+        int pessoaId = rs.getInt("pessoa_id");
+        if (pessoaId > 0) {
+            // Busca a Pessoa no banco usando o ID
+            Database<Pessoa> pessoaDatabase = new Database<>("pessoa"); // Instância de Database para pessoa
+            Pessoa pessoa = pessoaDatabase.getById(pessoaId, new Pessoa());
+
+            // Verifica se a Pessoa foi encontrada e associa ao fornecedor
+            if (pessoa != null) {
+                fornecedor.setPessoa(pessoa);
+            }
+        }
+
+        return fornecedor;
+    }
+
 }

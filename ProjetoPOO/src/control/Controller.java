@@ -1,7 +1,6 @@
 package control;
 
 import java.awt.HeadlessException;
-import java.time.LocalDate;
 import java.util.List;
 import javax.swing.JOptionPane;
 import model.Pessoa;
@@ -44,21 +43,37 @@ public class Controller {
     List<Presente> todosPresentes;
     List<PresenteRecebido> todosPresentesRecebido;
     List<MuralRecado> todosMuralRecado;
-    Database<Pessoa> pessoasDatabase = new Database<>();
-    Database<Usuario> usuariosDatabase = new Database<>();
-    Database<Fornecedor> fornecedoresDatabase = new Database<>();
-    Database<Convidado> convidadosDatabase = new Database<>();
-    Database<Familia> familiasDatabase = new Database<>();
-    Database<Pagamento> pagamentosDatabase = new Database<>();
-    Database<Calendario> calendariosDatabase = new Database<>();
-    Database<Presente> presentesDatabase = new Database<>();
-    Database<PresenteRecebido> presentesRecebidosDatabase = new Database<>();
-    Database<MuralRecado> muralRecadoDatabase = new Database<>();
+    Database<Pessoa> pessoasDatabase = new Database<>("pessoa");
+    Database<Usuario> usuariosDatabase = new Database<>("usuario");
+    Database<Fornecedor> fornecedoresDatabase = new Database<>("fornecedor");
+    Database<Convidado> convidadosDatabase = new Database<>("convidado");
+    Database<Familia> familiasDatabase = new Database<>("familia");
+    Database<Pagamento> pagamentosDatabase = new Database<>("pagamento");
+    Database<Calendario> calendariosDatabase = new Database<>("calendario");
+    Database<Presente> presentesDatabase = new Database<>("presente");
+    Database<PresenteRecebido> presentesRecebidosDatabase = new Database<>("presenterecebido");
+    Database<MuralRecado> muralRecadoDatabase = new Database<>("muralrecado");
     Utils utils = new Utils();
     Gerador gerador = new Gerador();
 
-    public void main(String[] args) {
-
+    public void main(String[] args) throws Exception {
+//        todasPessoas = pessoasDatabase.getAll(new Pessoa());
+//        for(Pessoa p : todasPessoas){
+//        System.out.println(p.toString());
+//        }
+//        pessoa = pessoasDatabase.getById(6, new Pessoa());
+//        System.out.println(pessoa);
+//        pessoa = new Pessoa();
+//        pessoa.setNome("Wagner");
+//        pessoa.setTelefone("34988724345");
+//        pessoa.setNascimento(utils.formatDate("18-04-1990"));
+//        System.out.println(pessoa.getNascimento());
+//        pessoasDatabase.create(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
+//        pessoasDatabase.delete(6);
+//        Pessoa p2 = pessoasDatabase.getById(1, new Pessoa());
+//        System.out.println(p2);
+//            pessoasDatabase.update(pessoa, new String[]{"nome"}, new Object[]{"wagner"});
+//    }
         while (controlForm) {
             escolha = menuInicio.menuInicial();
             if (escolha == 3 || escolha == -1) {
@@ -91,7 +106,7 @@ public class Controller {
                     System.exit(0);
             }
         }
-    }
+}
 
     public void perfilLogin(int escolhaPerfil) {
         if (escolhaPerfil == 2 || escolhaPerfil == -1) {
@@ -110,19 +125,19 @@ public class Controller {
         while (true) {
             switch (escolhaPerfil) {
                 case 0:
-                    todosUsuarios = usuariosDatabase.getAll();
+                    todosUsuarios = usuariosDatabase.getAll(new Usuario());
                     boolean logado = false;
                     for (Usuario u : todosUsuarios) {
                         if ((login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha())) && u.isAdmin()) {
                             logado = true;
                             u.setLogado(true);
-                            usuariosDatabase.update(u);
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
                             while (controlForm) {
                                 int escolhaAdm = menuInicio.menuAdministrador();
                                 perfilAdm(escolhaAdm);
                             }
                             u.setLogado(false);
-                            usuariosDatabase.update(u);
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
                             controlForm = false;
                             break;
                         }
@@ -135,19 +150,19 @@ public class Controller {
                     return;
 
                 case 1:
-                    todosUsuarios = usuariosDatabase.getAll();
+                    todosUsuarios = usuariosDatabase.getAll(new Usuario());
                     logado = false;
                     for (Usuario u : todosUsuarios) {
                         if ((login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha())) && !u.isAdmin()) {
                             logado = true;
                             u.setLogado(true);
-                            usuariosDatabase.update(u);
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
                             while (controlForm) {
                                 int escolhaConvidado = menuInicio.menuConvidado();
                                 perfilConvidado(escolhaConvidado);
                             }
                             u.setLogado(false);
-                            usuariosDatabase.update(u);
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
                             controlForm = false;
                             break;
                         }
@@ -223,7 +238,7 @@ public class Controller {
                     controlForm = true;
                     return;
                 case 7:
-                    todosMuralRecado = muralRecadoDatabase.getAll();
+                    todosMuralRecado = muralRecadoDatabase.getAll(new MuralRecado());
                     String strMuralRecado = "";
                     for (MuralRecado mr : todosMuralRecado) {
                         strMuralRecado += mr.toString() + "\n";
@@ -259,7 +274,7 @@ public class Controller {
                 pessoa.setTelefone(telefone);
 
                 // Validação de nascimento
-                String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd/MM/yyyy):", gerador.gerarDataNascimento());
+                String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd-MM-yyyy):", gerador.gerarDataNascimento());
                 if (!ValidaInput.string(nascimento)) {
                     return; // Volta ao menu se cancelar ou fechar
                 }
@@ -269,12 +284,12 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
                 }
-                pessoasDatabase.create(pessoa);
+                pessoasDatabase.create(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
                 JOptionPane.showMessageDialog(null, "Pessoa incluída com sucesso!");
                 return;
 
             case 1: // alterar
-                todasPessoas = pessoasDatabase.getAll();
+                todasPessoas = pessoasDatabase.getAll(new Pessoa());
                 String strPessoaId = "Digite o ID da pessoa que deseja alterar:" + "\n";
                 for (Pessoa p : todasPessoas) {
                     strPessoaId += p.toString() + "\n";
@@ -283,7 +298,7 @@ public class Controller {
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) { // Verifica se contem somente numero na string
                     return;
                 }
-                pessoa = pessoasDatabase.getById(Integer.parseInt(idAlterar));
+                pessoa = pessoasDatabase.getById(Integer.parseInt(idAlterar), new Pessoa());
                 if (pessoa != null) {
                     // Alterar nome
                     String novoNome = JOptionPane.showInputDialog("Digite o novo nome:", pessoa.getNome());
@@ -300,7 +315,7 @@ public class Controller {
                     pessoa.setTelefone(novoTelefone);
 
                     // Alterar data de nascimento
-                    String novoNascimento = JOptionPane.showInputDialog("Digite a nova data de nascimento (dd/MM/yyyy):", utils.formatDateToString(pessoa.getNascimento()));
+                    String novoNascimento = JOptionPane.showInputDialog("Digite a nova data de nascimento (dd-MM-yyyy):", utils.formatDateToString(pessoa.getNascimento()));
                     if (!ValidaInput.string(novoNascimento)) {
                         return; // Volta ao menu se cancelar ou fechar
                     }
@@ -312,7 +327,7 @@ public class Controller {
                     }
 
                     pessoa.setDataModificacao();
-                    pessoasDatabase.update(pessoa);
+                    pessoasDatabase.update(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
                     JOptionPane.showMessageDialog(null, "Pessoa alterada com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + idAlterar + " não encontrada.");
@@ -320,7 +335,7 @@ public class Controller {
                 return;
 
             case 2: // remover
-                todasPessoas = pessoasDatabase.getAll();
+                todasPessoas = pessoasDatabase.getAll(new Pessoa());
                 strPessoaId = "Digite o ID da pessoa que deseja remover:" + "\n";
                 for (Pessoa p : todasPessoas) {
                     strPessoaId += p.toString() + "\n";
@@ -329,9 +344,9 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) {
                     return;
                 }
-                pessoa = pessoasDatabase.getById(Integer.parseInt(idRemover));
-                usuario = usuariosDatabase.getById(Integer.parseInt(idRemover));
-                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idRemover));
+                pessoa = pessoasDatabase.getById(Integer.parseInt(idRemover), new Pessoa());
+                usuario = usuariosDatabase.getById(Integer.parseInt(idRemover), new Usuario());
+                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idRemover), new Fornecedor());
                 if (usuario != null) {
                     JOptionPane.showMessageDialog(null, "Existe usuário vinculado a este ID. Por favor delete o usuário");
                     return;
@@ -357,7 +372,7 @@ public class Controller {
                 if (!ValidaInput.string(idVisualizar) || !ValidaInput.stringEhInt(idVisualizar)) {
                     return;
                 }
-                pessoa = pessoasDatabase.getById(Integer.parseInt(idVisualizar));
+                pessoa = pessoasDatabase.getById(Integer.parseInt(idVisualizar), new Pessoa());
                 if (pessoa != null) {
                     JOptionPane.showMessageDialog(null, pessoa.toString());
                 } else {
@@ -366,7 +381,7 @@ public class Controller {
                 return;
 
             case 4: // visualizar todos
-                todasPessoas = pessoasDatabase.getAll();
+                todasPessoas = pessoasDatabase.getAll(new Pessoa());
                 if (!todasPessoas.isEmpty()) {
                     String strPessoa = "";
                     for (Pessoa p : todasPessoas) {
@@ -388,7 +403,7 @@ public class Controller {
 
             case 0: // incluir
                 usuario = new Usuario();
-                todasPessoas = pessoasDatabase.getAll();
+                todasPessoas = pessoasDatabase.getAll(new Pessoa());
                 String strPessoaId = "Digite o ID da pessoa para criar usuário:" + "\n";
                 for (Pessoa p : todasPessoas) {
                     strPessoaId += p.toString() + "\n";
@@ -397,12 +412,12 @@ public class Controller {
                 if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) { // Verifica se contem somente numero na string
                     return;
                 }
-                pessoa = pessoasDatabase.getById(Integer.parseInt(pessoaId));
+                pessoa = pessoasDatabase.getById(Integer.parseInt(pessoaId), new Pessoa());
                 if (pessoa == null) {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " não encontrada.");
                     return;
                 }
-                if (usuariosDatabase.getById(Integer.parseInt(pessoaId)) != null) {
+                if (usuariosDatabase.getById(Integer.parseInt(pessoaId), new Usuario()) != null) {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem usuário vinculado.");
                     return;
                 }
@@ -430,13 +445,13 @@ public class Controller {
                 }
 
                 // Criar usuário no banco de dados
-                usuariosDatabase.create(usuario);
+                usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), pessoa.getID()});
 
                 JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
                 return;
 
             case 1: // alterar
-                todosUsuarios = usuariosDatabase.getAll();
+                todosUsuarios = usuariosDatabase.getAll(new Usuario());
                 String strUsuarioId = "Digite o ID do usuário:" + "\n";
                 for (Usuario p : todosUsuarios) {
                     strUsuarioId += p.toString() + "\n";
@@ -445,7 +460,7 @@ public class Controller {
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) { // Verifica se contem somente numero na string
                     return;
                 }
-                usuario = usuariosDatabase.getById(Integer.parseInt(idAlterar));
+                usuario = usuariosDatabase.getById(Integer.parseInt(idAlterar), new Usuario());
                 if (usuario != null) {
                     String novoLogin = JOptionPane.showInputDialog("Digite o novo login:", usuario.getLogin());
                     if (!ValidaInput.string(novoLogin)) {
@@ -470,7 +485,8 @@ public class Controller {
                     usuario.setDataModificacao();
 
                     //Atualizar registro no banco de dados
-                    usuariosDatabase.update(usuario);
+                    usuariosDatabase.update(usuario, new String[]{"login", "senha", "tipo"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo()});
+
                     JOptionPane.showMessageDialog(null, "Usuário alterado com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Usuário com ID " + idAlterar + " não encontrado.");
@@ -478,7 +494,7 @@ public class Controller {
                 return;
 
             case 2: // remover
-                todosUsuarios = usuariosDatabase.getAll();
+                todosUsuarios = usuariosDatabase.getAll(new Usuario());
                 strUsuarioId = "Digite o ID do usuário:" + "\n";
                 for (Usuario p : todosUsuarios) {
                     strUsuarioId += p.toString() + "\n";
@@ -487,7 +503,7 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
-                usuario = usuariosDatabase.getById(Integer.parseInt(idRemover));
+                usuario = usuariosDatabase.getById(Integer.parseInt(idRemover), new Usuario());
                 if (usuario != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuário com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
@@ -507,7 +523,7 @@ public class Controller {
                 if (!ValidaInput.string(idVisualizar) || !ValidaInput.stringEhInt(idVisualizar)) {
                     return;
                 }
-                usuario = usuariosDatabase.getById(Integer.parseInt(idVisualizar));
+                usuario = usuariosDatabase.getById(Integer.parseInt(idVisualizar), new Usuario());
                 if (usuario != null) {
                     JOptionPane.showMessageDialog(null, usuario.toString());
                 } else {
@@ -516,7 +532,7 @@ public class Controller {
                 return;
 
             case 4: // visualizar todos 
-                todosUsuarios = usuariosDatabase.getAll();
+                todosUsuarios = usuariosDatabase.getAll(new Usuario());
                 if (!todosUsuarios.isEmpty()) {
                     String strUsuario = "";
                     for (Usuario u : todosUsuarios) {
@@ -883,12 +899,12 @@ public class Controller {
                 if (!ValidaInput.string(valorPresente) || !ValidaInput.stringEhDouble(valorPresente)) {
                     return; // Volta ao menu se cancelar ou fechar
                 }
-//                System.out.println(valorPresente);
+                System.out.println(valorPresente);
                 String valorPresenteFormat = Utils.formatDouble(valorPresente);
-//                System.out.println(valorPresenteFormat);
-//                if (!ValidaInput.string(valorPresenteFormat)) { // Verifica se contem somente numero na string com virgula
-//                    return;
-//                }
+                System.out.println(valorPresenteFormat);
+                if (!ValidaInput.string(valorPresenteFormat)) { // Verifica se contem somente numero na string com virgula
+                    return;
+                }
                 presente.setValor(Double.parseDouble(valorPresenteFormat));
 
                 String cotasPresente = JOptionPane.showInputDialog("Digite quantas cotas terá o presente:", gerador.getCota(indicePresente));
@@ -1049,7 +1065,7 @@ public class Controller {
                 }
 
                 //define a data do pagamento
-                String dataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd/mm/yyyy):");
+                String dataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd-MM-yyyy):");
                 if (!ValidaInput.string(dataPagamento)) {
                     return;
                 }
@@ -1156,7 +1172,7 @@ public class Controller {
                 }
 
                 //define a data do pagamento
-                String novaDataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd/mm/yyyy):", pagamento.getData());
+                String novaDataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd-MM-yyyy):", pagamento.getData());
                 if (!ValidaInput.string(novaDataPagamento)) {
                     return;
                 }
@@ -1275,7 +1291,7 @@ public class Controller {
         switch (escolhaCalendario) {
             case 0://adicionar evento
                 calendario = new Calendario();
-                String dataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd/mm/yyyy):");
+                String dataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):");
                 if (!ValidaInput.string(dataEvento)) {
                     return;
                 }
@@ -1311,7 +1327,7 @@ public class Controller {
                     return;
                 }
                 calendario = calendariosDatabase.getById(Integer.parseInt(idAlterar));
-                String novoDataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd/mm/yyyy):", calendario.getData());
+                String novoDataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):", calendario.getData());
                 if (!ValidaInput.string(novoDataEvento)) {
                     return;
                 }
@@ -1364,7 +1380,7 @@ public class Controller {
                 todosCalendarios = calendariosDatabase.getAll();
                 LocalDate dH;
                 //calendario = new Calendario();
-                String dataHoje = JOptionPane.showInputDialog("Digite a data do evento (dd/mm/yyyy):");
+                String dataHoje = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):");
                 if (!ValidaInput.string(dataHoje)) {
                     return;
                 }
@@ -1718,7 +1734,7 @@ public class Controller {
         pessoa.setTelefone(telefone);
 
         // Validação de nascimento
-        String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd/MM/yyyy):", gerador.gerarDataNascimento());
+        String nascimento = JOptionPane.showInputDialog("Digite o seu nascimento (dd-MM-yyyy):", gerador.gerarDataNascimento());
         if (!ValidaInput.string(nascimento)) {
             return false; // Volta ao menu se cancelar ou fechar
         }
@@ -1748,7 +1764,7 @@ public class Controller {
             return false; // Volta ao menu se cancelar ou fechar
         }
         if ("0".equals(tipo)) {
-            todosUsuarios = usuariosDatabase.getAll();
+            todosUsuarios = usuariosDatabase.getAll(new Usuario());
             for (Usuario u : todosUsuarios) {
                 if (u.getTipo() == 0) {
                     JOptionPane.showMessageDialog(null, "Já existe Administrador cadastrado", "Atenção", JOptionPane.INFORMATION_MESSAGE);
@@ -1763,12 +1779,12 @@ public class Controller {
             usuario.setAdmin(false);
         }
 
-        pessoasDatabase.create(pessoa);
-        pessoa = pessoasDatabase.getById(pessoa.getID());
+        pessoasDatabase.create(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
+        pessoa = pessoasDatabase.getById(pessoa.getID(), new Pessoa());
         usuario.setPessoa(pessoa);
 
         // Criar usuário no banco de dados
-        usuariosDatabase.create(usuario);
+        usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), pessoa.getID()});
         JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
         return false;
     }

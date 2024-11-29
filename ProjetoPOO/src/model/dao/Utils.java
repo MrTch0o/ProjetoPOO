@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Utils extends Identifiable{
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     LocalDate data;
 
     //formato dd-MM-yy
