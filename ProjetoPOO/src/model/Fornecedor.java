@@ -84,9 +84,16 @@ public class Fornecedor extends Identifiable implements Database.RowMapper<Forne
         fornecedor.setRazaoSocial(rs.getString("razaosocial"));
         fornecedor.setCpfCnpj(rs.getString("cpfcnpj"));
         fornecedor.setTelefone(rs.getString("telefone"));
-        fornecedor.setDataCriacao(rs.getTimestamp("datacriacao").toLocalDateTime());
-        fornecedor.setDataModificacao(rs.getTimestamp("datamodificacao").toLocalDateTime());
+        // Verifica se os campos não são nulos antes de converter
+        java.sql.Timestamp dataCriacao = rs.getTimestamp("datacriacao");
+        if (dataCriacao != null) {
+            fornecedor.setDataCriacao(dataCriacao.toLocalDateTime());
+        }
 
+        java.sql.Timestamp dataModificacao = rs.getTimestamp("datamodificacao");
+        if (dataModificacao != null) {
+            fornecedor.setDataModificacao(dataModificacao.toLocalDateTime());
+        }
         // Obtém o ID da pessoa associado ao fornecedor
         int pessoaId = rs.getInt("pessoa_id");
         if (pessoaId > 0) {

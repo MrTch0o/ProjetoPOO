@@ -1,11 +1,14 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import model.dao.Database;
 import model.dao.Identifiable;
 import model.dao.Utils;
 
-public class Pagamento extends Identifiable {
+public class Pagamento extends Identifiable implements Database.RowMapper<Pagamento> {
     Utils utils = new Utils();
     private LocalDate data;
     private Fornecedor fornecedor;
@@ -19,6 +22,10 @@ public class Pagamento extends Identifiable {
 
     public Pagamento() {
         this.dataCriacao = LocalDateTime.now();
+    }
+    
+    public void setDataCriacao(LocalDateTime date){
+        this.dataCriacao = date;
     }
 
     public void setData(LocalDate data) {
@@ -71,6 +78,9 @@ public class Pagamento extends Identifiable {
     public void setDataModificacao() {
         this.dataModificacao = LocalDateTime.now();
     }
+    public void setDataModificacao(LocalDateTime date) {
+        this.dataModificacao = date;
+    }
 
     public int getTipo() {
         return tipo;
@@ -86,6 +96,42 @@ public class Pagamento extends Identifiable {
     public String toString() {
         return "PAGAMENTO => | id: " + super.getID() + " | data: " + utils.formatDateToString(data) + "| fornecedor: " + fornecedor.getID() + " | valor: "
                 + valor + " | tipo: " + tipo + " | parcela: " + parcela + " | descricao: " + descricao + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
+    }
+
+    @Override
+    public Pagamento mapRow(ResultSet rs) throws SQLException {
+        Pagamento pagamento = new Pagamento();
+        pagamento.setID(rs.getInt("id"));
+        pagamento.setData(rs.getTimestamp("data").toLocalDateTime().toLocalDate());
+        pagamento.setValor(rs.getDouble("valor"));
+        pagamento.setTipo(rs.getInt("tipo"));
+        pagamento.setParcela(rs.getInt("parcelas"));
+        pagamento.setDescricao(rs.getString("descricao"));
+        // Verifica se os campos não são nulos antes de converter
+        java.sql.Timestamp dataCriacao = rs.getTimestamp("datacriacao");
+        if (dataCriacao != null) {
+            pagamento.setDataCriacao(dataCriacao.toLocalDateTime());
+        }
+
+        java.sql.Timestamp dataModificacao = rs.getTimestamp("datamodificacao");
+        if (dataModificacao != null) {
+            pagamento.setDataModificacao(dataModificacao.toLocalDateTime());
+        }
+        // Obtém o ID do forncedor associado ao pagamento
+        int fornecedorId = rs.getInt("fornecedor_id");
+        if (fornecedorId > 0) {
+            // Busca fornecedor no banco usando o ID
+            Database<Fornecedor> fornecedorDatabase = new Database<>("fornecedor"); // Instância de Database para pessoa
+            Fornecedor fornecedor = fornecedorDatabase.getById(fornecedorId, new Fornecedor());
+
+            // Verifica se a forncedor foi encontrada e associa ao pagamento
+            if (fornecedor != null) {
+                pagamento.setFornecedor(fornecedor);
+            }
+        }
+
+        return pagamento;
+
     }
 
 }

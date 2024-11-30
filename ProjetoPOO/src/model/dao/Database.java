@@ -298,8 +298,6 @@ public class Database<T extends Identifiable> {
 
     // Interface para mapear resultados para objetos
     public interface RowMapper<T> {
-
         T mapRow(ResultSet rs) throws SQLException;
     }
-
 }

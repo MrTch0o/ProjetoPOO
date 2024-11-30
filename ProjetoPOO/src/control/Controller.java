@@ -106,7 +106,7 @@ public class Controller {
                     System.exit(0);
             }
         }
-}
+    }
 
     public void perfilLogin(int escolhaPerfil) {
         if (escolhaPerfil == 2 || escolhaPerfil == -1) {
@@ -131,13 +131,13 @@ public class Controller {
                         if ((login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha())) && u.isAdmin()) {
                             logado = true;
                             u.setLogado(true);
-                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true ? 1 : 0});
                             while (controlForm) {
                                 int escolhaAdm = menuInicio.menuAdministrador();
                                 perfilAdm(escolhaAdm);
                             }
                             u.setLogado(false);
-                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true ? 1 : 0});
                             controlForm = false;
                             break;
                         }
@@ -156,13 +156,13 @@ public class Controller {
                         if ((login.equalsIgnoreCase(u.getLogin()) && senha.equals(u.getSenha())) && !u.isAdmin()) {
                             logado = true;
                             u.setLogado(true);
-                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true ? 1 : 0});
                             while (controlForm) {
                                 int escolhaConvidado = menuInicio.menuConvidado();
                                 perfilConvidado(escolhaConvidado);
                             }
                             u.setLogado(false);
-                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true? 1 : 0} );
+                            usuariosDatabase.update(u, new String[]{"logado"}, new Object[]{u.isLogado() == true ? 1 : 0});
                             controlForm = false;
                             break;
                         }
@@ -554,7 +554,7 @@ public class Controller {
 
             case 0: //incluir
                 fornecedor = new Fornecedor();
-                todasPessoas = pessoasDatabase.getAll();
+                todasPessoas = pessoasDatabase.getAll(new Pessoa());
                 String strPessoaId = "Digite o ID da pessoa para criar fornecedor:" + "\n";
                 for (Pessoa p : todasPessoas) {
                     strPessoaId += p.toString() + "\n";
@@ -563,12 +563,12 @@ public class Controller {
                 if (!ValidaInput.string(fornecedorId) || !ValidaInput.stringEhInt(fornecedorId)) { // Verifica se contem somente numero na string
                     return;
                 }
-                pessoa = pessoasDatabase.getById(Integer.parseInt(fornecedorId));
+                pessoa = pessoasDatabase.getById(Integer.parseInt(fornecedorId), new Pessoa());
                 if (pessoa == null) {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + fornecedorId + " não encontrada.");
                     return;
                 }
-                if (fornecedoresDatabase.getById(Integer.parseInt(fornecedorId)) != null) {
+                if (fornecedoresDatabase.getById(Integer.parseInt(fornecedorId), new Fornecedor()) != null) {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + fornecedorId + " já tem fornecedor vinculado.");
                     return;
                 }
@@ -594,13 +594,13 @@ public class Controller {
                 fornecedor.setTelefone(telefone);
 
                 // Criar usuário no banco de dados
-                fornecedoresDatabase.create(fornecedor);
+                fornecedoresDatabase.create(fornecedor, new String[]{"razaosocial", "cpfcnpj", "telefone", "pessoa_id"}, new Object[]{fornecedor.getRazaoSocial(), fornecedor.getcpfCnpj(), fornecedor.getTelefone(), pessoa.getID()});
 
                 JOptionPane.showMessageDialog(null, "Fornecedor incluído com sucesso!");
                 return;
 
             case 1: //alterar
-                todosFornecedores = fornecedoresDatabase.getAll();
+                todosFornecedores = fornecedoresDatabase.getAll(new Fornecedor());
                 String strFornecedorId = "Digite o ID do fornecedor:" + "\n";
                 for (Fornecedor f : todosFornecedores) {
                     strFornecedorId += f.toString() + "\n";
@@ -609,7 +609,7 @@ public class Controller {
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) { // Verifica se contem somente numero na string
                     return;
                 }
-                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idAlterar));
+                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idAlterar), new Fornecedor());
                 if (fornecedor != null) {
                     String novaRazaoSocial = JOptionPane.showInputDialog("Digite a Razão Social ou Nome Fantasia do fornecedor:", fornecedor.getRazaoSocial());
                     if (!ValidaInput.string(novaRazaoSocial)) {
@@ -632,7 +632,7 @@ public class Controller {
                     fornecedor.setDataModificacao();
 
                     //Atualizar registro no banco de dados
-                    fornecedoresDatabase.update(fornecedor);
+                    fornecedoresDatabase.update(fornecedor, new String[]{"razaosocial", "cpfcnpj", "telefone"}, new Object[]{fornecedor.getRazaoSocial(), fornecedor.getcpfCnpj(), fornecedor.getTelefone()});
                     JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Fornecedor com ID " + idAlterar + " não encontrado.");
@@ -640,7 +640,7 @@ public class Controller {
                 return;
 
             case 2: // remover
-                todosFornecedores = fornecedoresDatabase.getAll();
+                todosFornecedores = fornecedoresDatabase.getAll(new Fornecedor());
                 strFornecedorId = "Digite o ID do fornecedor:" + "\n";
                 for (Fornecedor f : todosFornecedores) {
                     strFornecedorId += f.toString() + "\n";
@@ -649,8 +649,8 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
-                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idRemover));
-                todosPagamentos = pagamentosDatabase.getAll();
+                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idRemover), new Fornecedor());
+                todosPagamentos = pagamentosDatabase.getAll(new Pagamento());
                 for (Pagamento p : todosPagamentos) {
                     if (p.getFornecedor() == fornecedor) {
                         JOptionPane.showMessageDialog(null, "Existe pagamento para o fornecedor de ID " + idRemover + ", para deletar, remova o pagamento.");
@@ -676,7 +676,7 @@ public class Controller {
                 if (!ValidaInput.string(idVisualizar) || !ValidaInput.stringEhInt(idVisualizar)) {
                     return;
                 }
-                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idVisualizar));
+                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(idVisualizar), new Fornecedor());
                 if (fornecedor != null) {
                     JOptionPane.showMessageDialog(null, fornecedor.toString());
                 } else {
@@ -685,7 +685,7 @@ public class Controller {
                 return;
 
             case 4: // visualizar todos 
-                todosFornecedores = fornecedoresDatabase.getAll();
+                todosFornecedores = fornecedoresDatabase.getAll(new Fornecedor());
                 if (!todosFornecedores.isEmpty()) {
                     String strFornecedores = "";
                     for (Fornecedor f : todosFornecedores) {
@@ -787,11 +787,11 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
-                try{
-                convidado = convidadosDatabase.getById(Integer.parseInt(idRemover));
-                familia = convidado.getFamilia();
-                } catch (NullPointerException e){
-                  return;
+                try {
+                    convidado = convidadosDatabase.getById(Integer.parseInt(idRemover));
+                    familia = convidado.getFamilia();
+                } catch (NullPointerException e) {
+                    return;
                 }
                 if (convidado != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o convidado com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);

@@ -103,8 +103,16 @@ public class Usuario extends Identifiable implements Database.RowMapper<Usuario>
         usuario.setTipo(rs.getInt("tipo"));
         usuario.setLogado(rs.getInt("logado") == 1? true : false);
         usuario.setAdmin(rs.getInt("admin") == 1? true : false);
-        usuario.setDataCriacao(rs.getTimestamp("datacriacao").toLocalDateTime());
-        usuario.setDataModificacao(rs.getTimestamp("datamodificacao").toLocalDateTime());
+         // Verifica se os campos não são nulos antes de converter
+        java.sql.Timestamp dataCriacao = rs.getTimestamp("datacriacao");
+        if (dataCriacao != null) {
+            usuario.setDataCriacao(dataCriacao.toLocalDateTime());
+        }
+
+        java.sql.Timestamp dataModificacao = rs.getTimestamp("datamodificacao");
+        if (dataModificacao != null) {
+            usuario.setDataModificacao(dataModificacao.toLocalDateTime());
+        }
 
         // Obtém o ID da pessoa associado ao usuário
         int pessoaId = rs.getInt("pessoa_id");
