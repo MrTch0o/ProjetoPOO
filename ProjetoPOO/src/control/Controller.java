@@ -712,12 +712,13 @@ public class Controller {
                 if (!ValidaInput.string(convidadoId) || !ValidaInput.stringEhInt(convidadoId)) { // Verifica se contem somente numero na string
                     return;
                 }
-                pessoa = pessoasDatabase.getById(Integer.parseInt(convidadoId));
+                pessoa = pessoasDatabase.getById(Integer.parseInt(convidadoId), new Pessoa());
                 if (pessoa == null) {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " não encontrada.");
                     return;
                 }
-                if (convidadosDatabase.getById(Integer.parseInt(convidadoId)) != null) {
+                convidado = convidadosDatabase.getById(Integer.parseInt(convidadoId), new Convidado());
+                if (convidado != null) {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " já tem convite vinculado.");
                     return;
                 }
@@ -734,8 +735,8 @@ public class Controller {
                 convidado.setParentesco(parentesco);
 
                 // Criar usuário no banco de dados
-                familiasDatabase.create(familia);
-                convidadosDatabase.create(convidado);
+                familiasDatabase.create(familia, new String[]{"nome", "acesso"}, new Object[]{familia.getNomeFamilia(), familia.getAcesso()});
+                convidadosDatabase.create(convidado, new String[]{"pessoa_id", "familia_id", "parentesco", "confirmado"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco(), convidado.isConfirmado() == true? 1 : 0});
 
                 JOptionPane.showMessageDialog(null, "Convidado incluído com sucesso!");
                 return;
@@ -747,21 +748,21 @@ public class Controller {
                     return; // Volta ao menu se cancelar ou fechar
                 }
                 familia.setNomeFamilia(nomeFamilia);
-                familiasDatabase.create(familia);
+                familiasDatabase.create(familia, new String[]{"nome"}, new Object[]{familia.getNomeFamilia()});
                 // Vincula várias pessoas à família até que o usuário cancele
                 while (true) {
-                    String pessoaId = JOptionPane.showInputDialog("Digite o ID da pessoa para vincular à família (ou clique Cancelar para terminar):");
+                    String pessoaId = JOptionPane.showInputDialog("Digite o ID do pessoa para vincular à família (ou clique Cancelar para terminar):");
                     if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) {
                         break; // Sai do loop se o usuário cancelar ou o ID não for válido
                     }
 
-                    pessoa = pessoasDatabase.getById(Integer.parseInt(pessoaId));
+                    pessoa = pessoasDatabase.getById(Integer.parseInt(pessoaId), new Pessoa());
                     if (pessoa == null) {
                         JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " não encontrada.");
                         continue; // Pede outro ID se a pessoa não for encontrada
                     }
 
-                    if (convidadosDatabase.getById(Integer.parseInt(pessoaId)) != null) {
+                    if (convidadosDatabase.getById(Integer.parseInt(pessoaId), new Convidado()) != null) {
                         JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem convite vinculado.");
                         continue; // Pede outro ID se a pessoa já for um convidado
                     }
@@ -776,7 +777,7 @@ public class Controller {
                     String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
                     familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
                     // Salva o convidado no banco de dados
-                    convidadosDatabase.create(convidado);
+                    convidadosDatabase.create(convidado, new String[]{"pessoa_id", "familia_id", "parentesco"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco()});
                 }
 
                 JOptionPane.showMessageDialog(null, "Convidados familiares incluídos com sucesso!");
@@ -788,7 +789,7 @@ public class Controller {
                     return;
                 }
                 try {
-                    convidado = convidadosDatabase.getById(Integer.parseInt(idRemover));
+                    convidado = convidadosDatabase.getById(Integer.parseInt(idRemover), new Convidado());
                     familia = convidado.getFamilia();
                 } catch (NullPointerException e) {
                     return;
@@ -811,8 +812,8 @@ public class Controller {
                 if (!ValidaInput.string(familiaRemover)) {
                     return;
                 }
-                todosConvidados = convidadosDatabase.getAll();
-                todasFamilias = familiasDatabase.getAll();
+                todosConvidados = convidadosDatabase.getAll(new Convidado());
+                todasFamilias = familiasDatabase.getAll(new Familia());
                 //Familia f;
                 int qtdConvites = 0;
                 int qtdRemovidos = 0;
@@ -857,14 +858,14 @@ public class Controller {
                 if (!ValidaInput.string(idVisualizar) || !ValidaInput.stringEhInt(idVisualizar)) {
                     return;
                 }
-                convidado = convidadosDatabase.getById(Integer.parseInt(idVisualizar));
+                convidado = convidadosDatabase.getById(Integer.parseInt(idVisualizar), new Convidado());
                 if (convidado != null) {
                     JOptionPane.showMessageDialog(null, convidado.toString());
                 } else {
                     JOptionPane.showMessageDialog(null, "Usuário com ID " + idVisualizar + " não encontrado.");
                 }
             case 5:
-                todosConvidados = convidadosDatabase.getAll();
+                todosConvidados = convidadosDatabase.getAll(new Convidado());
                 if (!todosConvidados.isEmpty()) {
                     String strConvidados = "";
                     for (Convidado c : todosConvidados) {
