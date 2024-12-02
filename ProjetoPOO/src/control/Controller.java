@@ -1,6 +1,7 @@
 package control;
 
 import java.awt.HeadlessException;
+import java.time.LocalDate;
 import java.util.List;
 import javax.swing.JOptionPane;
 import model.Pessoa;
@@ -917,7 +918,7 @@ public class Controller {
                 presente.setValorCota(valorCota);
 
                 // Adiciona ao banco de dados (ou lista)
-                presentesDatabase.create(presente);
+                presentesDatabase.create(presente, new String[]{"nome", "valor", "cotas", "valorcota", }, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()} );
                 JOptionPane.showMessageDialog(null, "Presente incluído com sucesso!");
 
                 return;
@@ -928,7 +929,7 @@ public class Controller {
                     return;
                 }
 
-                presente = presentesDatabase.getById(Integer.parseInt(idAlterar));
+                presente = presentesDatabase.getById(Integer.parseInt(idAlterar), new Presente());
                 if (presente != null) {
                     String novoNome = JOptionPane.showInputDialog("Digite o novo nome:", presente.getNome());
                     if (!ValidaInput.string(novoNome)) {
@@ -951,7 +952,7 @@ public class Controller {
 
                     presente.setCotas(Integer.parseInt(novasCotas));
                     presente.setDataModificacao();
-                    presentesDatabase.update(presente);
+                    presentesDatabase.update(presente, new String[]{"nome", "valor", "cotas", "valorcota", }, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()});
                     JOptionPane.showMessageDialog(null, "Presente alterado com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Presente com ID " + idAlterar + " não encontrado.");
@@ -964,7 +965,7 @@ public class Controller {
                     return;
                 }
 
-                presente = presentesDatabase.getById(Integer.parseInt(idRemover));
+                presente = presentesDatabase.getById(Integer.parseInt(idRemover), new Presente());
                 if (presente != null) {
                     int confirmacaoRemocao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o presente com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacaoRemocao == JOptionPane.YES_OPTION) {
@@ -979,7 +980,7 @@ public class Controller {
                 return;
 
             case 3: // Visualizar Presentes Cadastrados
-                todosPresentes = presentesDatabase.getAll();
+                todosPresentes = presentesDatabase.getAll(new Presente());
                 if (!todosPresentes.isEmpty()) {
                     String strPresentes = "";
                     for (int i = 0; i < todosPresentes.size(); i++) {
@@ -992,7 +993,7 @@ public class Controller {
                 return;
 
             case 4: // Visualizar Presentes Recebidos
-                todosPresentesRecebido = presentesRecebidosDatabase.getAll();
+                todosPresentesRecebido = presentesRecebidosDatabase.getAll(new PresenteRecebido());
                 if (!todosPresentesRecebido.isEmpty()) {
                     String strPresentesRecebidos = "";
                     for (PresenteRecebido pr : todosPresentesRecebido) {
@@ -1024,7 +1025,7 @@ public class Controller {
                 if (!ValidaInput.string(fornecedorId) || !ValidaInput.stringEhInt(fornecedorId)) { // Verifica se contem somente numero na string
                     return;
                 }
-                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(fornecedorId));
+                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(fornecedorId), new Fornecedor());
                 if (fornecedor == null) {
                     JOptionPane.showMessageDialog(null, "Fornecedor com ID " + fornecedorId + " não encontrado.");
                     return;
@@ -1094,7 +1095,7 @@ public class Controller {
                     }
 
                 }
-                pagamentosDatabase.create(pagamento);
+                pagamentosDatabase.create(pagamento, new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
 
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
@@ -1103,7 +1104,7 @@ public class Controller {
                     stringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
                     calendario.setDescricao(stringDescricao);
                     calendario.setPagamento(pagamento);
-                    calendariosDatabase.create(calendario);
+                    calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
@@ -1112,7 +1113,7 @@ public class Controller {
                         stringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(stringDescricao);
                         calendario.setPagamento(pagamento);
-                        calendariosDatabase.create(calendario);
+                        calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                     }
                 }
 
@@ -1125,7 +1126,7 @@ public class Controller {
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) {
                     return;
                 }
-                pagamento = pagamentosDatabase.getById(Integer.parseInt(idAlterar));
+                pagamento = pagamentosDatabase.getById(Integer.parseInt(idAlterar), new Pagamento());
                 if (pagamento == null) {
                     JOptionPane.showMessageDialog(null, "Pagamento com ID " + idAlterar + " não encontrado");
                     return;
@@ -1135,7 +1136,7 @@ public class Controller {
                 if (!ValidaInput.string(novoFornecedorId) || !ValidaInput.stringEhInt(novoFornecedorId)) { // Verifica se contem somente numero na string
                     return;
                 }
-                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(novoFornecedorId));
+                fornecedor = fornecedoresDatabase.getById(Integer.parseInt(novoFornecedorId), new Fornecedor());
                 if (fornecedor == null) {
                     JOptionPane.showMessageDialog(null, "Fornecedor com ID " + novoFornecedorId + " não encontrado.");
                     return;
@@ -1201,7 +1202,7 @@ public class Controller {
                     }
 
                 }
-                todosCalendarios = calendariosDatabase.getAll();
+                todosCalendarios = calendariosDatabase.getAll(new Calendario());
                 for (Calendario c : todosCalendarios) {
                     Pagamento calendarioPagamento = c.getPagamento();
                     if (calendarioPagamento.getID() == Integer.parseInt(idAlterar)) {
@@ -1209,7 +1210,7 @@ public class Controller {
                     }
                 }
                 pagamento.setDataModificacao();
-                pagamentosDatabase.update(pagamento);
+                pagamentosDatabase.update(pagamento,new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
                     calendario.setData(pagamento.getData());
@@ -1217,7 +1218,7 @@ public class Controller {
                     novaStringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
                     calendario.setDescricao(novaStringDescricao);
                     calendario.setPagamento(pagamento);
-                    calendariosDatabase.create(calendario);
+                    calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
@@ -1226,7 +1227,7 @@ public class Controller {
                         novaStringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(novaStringDescricao);
                         calendario.setPagamento(pagamento);
-                        calendariosDatabase.create(calendario);
+                        calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                     }
                 }
                 JOptionPane.showMessageDialog(null, "Pagamento atualizado com sucesso!");
@@ -1237,8 +1238,8 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
-                pagamento = pagamentosDatabase.getById(Integer.parseInt(idRemover));
-                todosCalendarios = calendariosDatabase.getAll();
+                pagamento = pagamentosDatabase.getById(Integer.parseInt(idRemover), new Pagamento());
+                todosCalendarios = calendariosDatabase.getAll(new Calendario());
                 if (pagamento != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o pagamento com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
@@ -1262,7 +1263,7 @@ public class Controller {
                 if (!ValidaInput.string(idVisualizar) || !ValidaInput.stringEhInt(idVisualizar)) {
                     return;
                 }
-                pagamento = pagamentosDatabase.getById(Integer.parseInt(idVisualizar));
+                pagamento = pagamentosDatabase.getById(Integer.parseInt(idVisualizar), new Pagamento());
                 if (pagamento != null) {
                     JOptionPane.showMessageDialog(null, pagamento.toString());
                 } else {
@@ -1270,7 +1271,7 @@ public class Controller {
                 }
                 return;
             case 4:
-                todosPagamentos = pagamentosDatabase.getAll();
+                todosPagamentos = pagamentosDatabase.getAll(new Pagamento());
                 if (!todosPagamentos.isEmpty()) {
                     String strPagamentos = "";
                     for (Pagamento p : todosPagamentos) {
@@ -1317,7 +1318,7 @@ public class Controller {
                     descricaoEvento = descricaoEvento.substring(0, 4000); // Trunca o texto para 4000 caracteres
                 }
                 calendario.setDescricao(descricaoEvento);
-                calendariosDatabase.create(calendario);
+               calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao()});
 
                 JOptionPane.showMessageDialog(null, "Evento adicionado com sucesso!\n");
                 return;
@@ -1327,7 +1328,7 @@ public class Controller {
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) {
                     return;
                 }
-                calendario = calendariosDatabase.getById(Integer.parseInt(idAlterar));
+                calendario = calendariosDatabase.getById(Integer.parseInt(idAlterar), new Calendario());
                 String novoDataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):", calendario.getData());
                 if (!ValidaInput.string(novoDataEvento)) {
                     return;
@@ -1354,7 +1355,7 @@ public class Controller {
                 }
                 calendario.setDescricao(novoDescricaoEvento);
                 calendario.setDataModificacao();
-                calendariosDatabase.update(calendario);
+                calendariosDatabase.update(calendario, new String[]{"dataevento", "titulo", "descricao"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao()});
 
                 JOptionPane.showMessageDialog(null, "Evento Alterado com sucesso!\n");
                 return;
@@ -1364,7 +1365,7 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) {
                     return;
                 }
-                calendario = calendariosDatabase.getById(Integer.parseInt(idRemover));
+                calendario = calendariosDatabase.getById(Integer.parseInt(idRemover), new Calendario());
                 if (calendario != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o evento com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
@@ -1378,7 +1379,7 @@ public class Controller {
                 }
                 return;
             case 3: //visualizar compromissos hoje
-                todosCalendarios = calendariosDatabase.getAll();
+                todosCalendarios = calendariosDatabase.getAll(new Calendario());
                 LocalDate dH;
                 //calendario = new Calendario();
                 String dataHoje = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):");
@@ -1404,7 +1405,7 @@ public class Controller {
                 }
                 return;
             case 4://visualizar calendario
-                todosCalendarios = calendariosDatabase.getAll();
+                todosCalendarios = calendariosDatabase.getAll(new Calendario());
                 if (!todosCalendarios.isEmpty()) {
                     String strCalendarios = "";
                     for (Calendario c : todosCalendarios) {
@@ -1428,7 +1429,7 @@ public class Controller {
             switch (escolhaConvidado) {
                 case 0: // Dar presente
 
-                    todosPresentes = presentesDatabase.getAll();
+                    todosPresentes = presentesDatabase.getAll(new Presente());
                     String strPresentes = "";
 
                     if (!todosPresentes.isEmpty()) {
@@ -1450,7 +1451,7 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
                         return;
                     }
-                    presente = presentesDatabase.getById(numeroPresente + 1);
+                    presente = presentesDatabase.getById((numeroPresente + 1), new Presente());
 
                     // Solicita quantas cotas o usuário deseja dar
                     String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
@@ -1472,7 +1473,7 @@ public class Controller {
 
                     if (confirmacao == JOptionPane.YES_OPTION) {
                         presente.setCotas(cotasDisponiveis - cotasInt);
-                        presentesDatabase.update(presente);
+                        presentesDatabase.update(presente, new String[]{"cotas"}, new Object[]{presente.getCotas()});
                         presenteRecebido = new PresenteRecebido();
                         presenteRecebido.setPresente(presente);
                         presenteRecebido.setQtdCotas(cotasInt);
@@ -1481,7 +1482,8 @@ public class Controller {
                                 presenteRecebido.setPessoa(u.getPessoa());
                             }
                         }
-                        presentesRecebidosDatabase.create(presenteRecebido);
+                        pessoa = presenteRecebido.getPessoa();
+                        presentesRecebidosDatabase.create(presenteRecebido, new String[]{"presente_id", "qtdcotas", "pessoa_id"}, new Object[]{presente.getID(), presenteRecebido.getQtdCotas(), pessoa.getID()});
                         JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
                     } else {
                         JOptionPane.showMessageDialog(null, "Presente Cancelado!");
@@ -1501,8 +1503,8 @@ public class Controller {
                     if (!ValidaInput.string(codigoAcesso)) {
                         return;
                     }
-                    todosConvidados = convidadosDatabase.getAll();
-                    todosUsuarios = usuariosDatabase.getAll();
+                    todosConvidados = convidadosDatabase.getAll(new Convidado());
+                    todosUsuarios = usuariosDatabase.getAll(new Usuario());
                     for (Usuario u : todosUsuarios) {
                         if (u.isLogado()) {
                             usuario = u;
@@ -1525,7 +1527,7 @@ public class Controller {
                                 if (confirmacao == JOptionPane.YES_OPTION) {
                                     c.setConfirmado(true); // Atualiza a confirmação
                                     c.setDataModificacao(); // Atualiza a data de modificação
-                                    convidadosDatabase.update(c); // Salva no banco de dados
+                                    convidadosDatabase.update(c, new String[]{"confirmado"}, new Object[]{c.isConfirmado() == true? 1 : 0}); // Salva no banco de dados
                                     JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
                                 } else {
                                     JOptionPane.showMessageDialog(null, "Confirmação de presença cancelada.");
@@ -1575,7 +1577,7 @@ public class Controller {
                                 if (confirmacao == JOptionPane.YES_OPTION) {
                                     convidadoConfirmar.setConfirmado(true); // Atualiza a confirmação
                                     convidadoConfirmar.setDataModificacao(); // Atualiza a data de modificação
-                                    convidadosDatabase.update(convidadoConfirmar); // Salva no banco de dados
+                                    convidadosDatabase.update(convidadoConfirmar, new String[]{"confirmado"}, new Object[]{convidadoConfirmar.isConfirmado() == true? 1 : 0});
                                     JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o membro da família com ID: " + convidadoConfirmar.getID());
                                     return;
                                 } else {
@@ -1601,7 +1603,7 @@ public class Controller {
             switch (escolhaNaoLogado) {
                 case 0:
 
-                    todosPresentes = presentesDatabase.getAll();
+                    todosPresentes = presentesDatabase.getAll(new Presente());
                     String strPresentes = "";
 
                     if (!todosPresentes.isEmpty()) {
@@ -1623,7 +1625,7 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Presente inválido! Escolha novamente.");
                         return;
                     }
-                    presente = presentesDatabase.getById(numeroPresente + 1);
+                    presente = presentesDatabase.getById((numeroPresente + 1), new Presente());
 
                     // Solicita quantas cotas o usuário deseja dar
                     String cotas = JOptionPane.showInputDialog(null, "Digite o número de cotas que deseja dar:");
@@ -1645,7 +1647,7 @@ public class Controller {
 
                     if (confirmacao == JOptionPane.YES_OPTION) {
                         presente.setCotas(cotasDisponiveis - cotasInt);
-                        presentesDatabase.update(presente);
+                        presentesDatabase.update(presente, new String[]{"cotas"}, new Object[]{presente.getCotas()});
                         presenteRecebido = new PresenteRecebido();
                         presenteRecebido.setPresente(presente);
                         presenteRecebido.setQtdCotas(cotasInt);
@@ -1656,7 +1658,7 @@ public class Controller {
                         }
                         pessoa.setNome(nome);
                         presenteRecebido.setPessoa(pessoa);
-                        presentesRecebidosDatabase.create(presenteRecebido);
+                        presentesRecebidosDatabase.create(presenteRecebido, new String[]{"pessoa_id", "presente_id", "qtdcotas"}, new Object[]{pessoa.getID(), presente.getID(), presenteRecebido.getQtdCotas()});
                         JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
                     } else {
                         JOptionPane.showMessageDialog(null, "Presente Cancelado!");
@@ -1683,7 +1685,7 @@ public class Controller {
                     confirmacao = JOptionPane.showConfirmDialog(null, "Confirma deixar recado?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
                     if (confirmacao == JOptionPane.YES_OPTION) {
-                        muralRecadoDatabase.create(muralRecado);
+                        muralRecadoDatabase.create(muralRecado, new String[]{"nome", "recado"}, new Object[]{muralRecado.getNome(), muralRecado.getRecado()});
                         JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n");
                     } else {
                         JOptionPane.showMessageDialog(null, "Falha ao deixar Recado!\n");
@@ -1713,7 +1715,7 @@ public class Controller {
                 muralRecado.setNome(p.getNome());
             }
         }
-        muralRecadoDatabase.create(muralRecado);
+        muralRecadoDatabase.create(muralRecado, new String[]{"nome", "recado"}, new Object[]{muralRecado.getNome(), muralRecado.getRecado()});
         return true;
     }
 

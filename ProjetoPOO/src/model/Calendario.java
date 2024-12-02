@@ -1,11 +1,14 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import model.dao.Database;
 import model.dao.Identifiable;
 import model.dao.Utils;
 
-public class Calendario extends Identifiable {
+public class Calendario extends Identifiable implements Database.RowMapper {
 
     Utils utils = new Utils();
     private LocalDate dataEvento;
@@ -44,12 +47,24 @@ public class Calendario extends Identifiable {
         this.descricao = descricao;
     }
 
+    public LocalDateTime getDataCriacao() {
+        return this.dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime date) {
+        this.dataCriacao = date;
+    }
+
     public LocalDateTime getDataModificacao() {
         return dataModificacao;
     }
 
     public void setDataModificacao() {
         this.dataModificacao = LocalDateTime.now();
+    }
+
+    public void setDataModificacao(LocalDateTime date) {
+        this.dataModificacao = date;
     }
 
     public String getDataEventoFormat() {
@@ -80,6 +95,42 @@ public class Calendario extends Identifiable {
     public String toString() {
         return "CALENDARIO => | id: " + super.getID() + ((pagamento != null) ? " | pagamentoId = " + String.valueOf(pagamento.getID()) : "") + " | dataEvento: " + utils.formatDateToString(dataEvento) + " | titulo: " + titulo + " | descricao: " + descricao
                 + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
+    }
+
+    @Override
+    public Calendario mapRow(ResultSet rs) throws SQLException {
+        Calendario calendario = new Calendario();
+        calendario.setID(rs.getInt("id"));
+        dataEvento = rs.getTimestamp("dataevento").toLocalDateTime().toLocalDate();
+        calendario.setTitulo(rs.getString("titulo"));
+        calendario.setDescricao(rs.getString("descricao"));
+
+        int pagamentoId = rs.getInt("pagamento_id");
+        if (pagamentoId > 0) {
+            // Busca a pagamento no banco usando o ID
+            Database<Pagamento> pagamentoDatabase = new Database<>("pagamento"); // Instância de Database para pagamento
+            Pagamento pagamento = pagamentoDatabase.getById(pagamentoId, new Pagamento());
+
+            // Verifica se a pagamento foi encontrada e associa ao fornecedor
+            if (pagamento != null) {
+                calendario.setPagamento(pagamento);
+            }
+
+            // Verifica se os campos não são nulos antes de converter
+            java.sql.Timestamp dataCriacao = rs.getTimestamp("datacriacao");
+            if (dataCriacao != null) {
+                calendario.setDataCriacao(dataCriacao.toLocalDateTime());
+            }
+
+            java.sql.Timestamp dataModificacao = rs.getTimestamp("datamodificacao");
+            if (dataModificacao != null) {
+                calendario.setDataModificacao(dataModificacao.toLocalDateTime());
+            }
+//        calendario.setDataCriacao(rs.getTimestamp("dataCriacao").toLocalDateTime());
+//        calendario.setDataModificacao(rs.getTimestamp("dataModificacao").toLocalDateTime());
+
+        }
+        return calendario;
     }
 
 }

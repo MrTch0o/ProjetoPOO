@@ -59,7 +59,7 @@ public class Familia extends Identifiable implements Database.RowMapper {
     }
 
     @Override
-    public Object mapRow(ResultSet rs) throws SQLException {
+    public Familia mapRow(ResultSet rs) throws SQLException {
         Familia familia = new Familia();
         familia.setID(rs.getInt("id"));
         familia.setNomeFamilia(rs.getString("nome"));
