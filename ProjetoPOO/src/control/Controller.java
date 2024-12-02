@@ -23,7 +23,6 @@ public class Controller {
     boolean controlForm = true; //Variavel para controle de Form;
     int escolha;
     MenuInicio menuInicio = new MenuInicio();
-    
 
     Pessoa pessoa;
     Usuario usuario;
@@ -70,7 +69,7 @@ public class Controller {
 //        pessoa.setTelefone("34988724345");
 //        pessoa.setNascimento(utils.formatDate("18-04-1990"));
 //        System.out.println(pessoa.getNascimento());
-//        pessoasDatabase.create(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
+//        pessoasDatabase.insert(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
 //        pessoasDatabase.delete(6);
 //        Pessoa p2 = pessoasDatabase.getById(1, new Pessoa());
 //        System.out.println(p2);
@@ -286,7 +285,7 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
                 }
-                pessoasDatabase.create(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
+                pessoasDatabase.insert(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
                 JOptionPane.showMessageDialog(null, "Pessoa incluída com sucesso!");
                 return;
 
@@ -447,7 +446,7 @@ public class Controller {
                 }
 
                 // Criar usuário no banco de dados
-                usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo","admin", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true? 1 : 0, pessoa.getID()});
+                usuariosDatabase.insert(usuario, new String[]{"login", "senha", "tipo", "admin", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true ? 1 : 0, pessoa.getID()});
 
                 JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
                 return;
@@ -487,7 +486,7 @@ public class Controller {
 //                    usuario.setDataModificacao();
 
                     //Atualizar registro no banco de dados
-                    usuariosDatabase.update(usuario, new String[]{"login", "senha", "tipo", "admin"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true? 1 : 0});
+                    usuariosDatabase.update(usuario, new String[]{"login", "senha", "tipo", "admin"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true ? 1 : 0});
 
                     JOptionPane.showMessageDialog(null, "Usuário alterado com sucesso!");
                 } else {
@@ -596,7 +595,7 @@ public class Controller {
                 fornecedor.setTelefone(telefone);
 
                 // Criar usuário no banco de dados
-                fornecedoresDatabase.create(fornecedor, new String[]{"razaosocial", "cpfcnpj", "telefone", "pessoa_id"}, new Object[]{fornecedor.getRazaoSocial(), fornecedor.getcpfCnpj(), fornecedor.getTelefone(), pessoa.getID()});
+                fornecedoresDatabase.insert(fornecedor, new String[]{"razaosocial", "cpfcnpj", "telefone", "pessoa_id"}, new Object[]{fornecedor.getRazaoSocial(), fornecedor.getcpfCnpj(), fornecedor.getTelefone(), pessoa.getID()});
 
                 JOptionPane.showMessageDialog(null, "Fornecedor incluído com sucesso!");
                 return;
@@ -632,7 +631,6 @@ public class Controller {
                     fornecedor.setTelefone(novoTelefone);
 
 //                    fornecedor.setDataModificacao();
-
                     //Atualizar registro no banco de dados
                     fornecedoresDatabase.update(fornecedor, new String[]{"razaosocial", "cpfcnpj", "telefone"}, new Object[]{fornecedor.getRazaoSocial(), fornecedor.getcpfCnpj(), fornecedor.getTelefone()});
                     JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso!");
@@ -708,9 +706,14 @@ public class Controller {
 
         switch (escolhaConvite) {
             case 0://incluir convite individual
-                familia = new Familia();
-                convidado = new Convidado();
-                String convidadoId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar convidado:");
+
+                todasPessoas = pessoasDatabase.getAll(new Pessoa());
+                String strPessoaId = "Digite o ID da pessoa para criar convidado:" + "\n";
+                for (Pessoa p : todasPessoas) {
+                    strPessoaId += p.toString() + "\n";
+                }
+                String convidadoId = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
+//                String convidadoId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar convidado:");
                 if (!ValidaInput.string(convidadoId) || !ValidaInput.stringEhInt(convidadoId)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -724,7 +727,9 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " já tem convite vinculado.");
                     return;
                 }
+                convidado = new Convidado();
                 convidado.setPessoa(pessoa);
+                familia = new Familia();
                 familia.setNomeFamilia("individual");
                 String acessoI = "ci" + familia.getDataCriacao();
                 String acessoFormatadoI = "ci" + acessoI.substring(acessoI.length() - 6);
@@ -737,20 +742,47 @@ public class Controller {
                 convidado.setParentesco(parentesco);
 
                 // Criar usuário no banco de dados
-                familiasDatabase.create(familia, new String[]{"nome", "acesso"}, new Object[]{familia.getNomeFamilia(), familia.getAcesso()});
-                convidadosDatabase.create(convidado, new String[]{"pessoa_id", "familia_id", "parentesco", "confirmado"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco(), convidado.isConfirmado() == true? 1 : 0});
+                familiasDatabase.insert(familia, new String[]{"nome", "acesso"}, new Object[]{familia.getNomeFamilia(), familia.getAcesso()});
+                convidadosDatabase.insert(convidado, new String[]{"pessoa_id", "familia_id", "parentesco", "confirmado"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco(), convidado.isConfirmado() == true ? 1 : 0});
 
                 JOptionPane.showMessageDialog(null, "Convidado incluído com sucesso!");
                 return;
 
             case 1: //incluir convite familia
                 familia = new Familia();
-                String nomeFamilia = JOptionPane.showInputDialog("Digite o nome da família:");
-                if (!ValidaInput.string(nomeFamilia)) {
-                    return; // Volta ao menu se cancelar ou fechar
+                todasFamilias = familiasDatabase.getAll(new Familia());
+                String strFamiliaId = "Digite o ID da familia para criar convidado ou '0' para criar uma nova familia:" + "\n";
+                for (Familia f : todasFamilias) {
+                    strFamiliaId += f.toString() + "\n";
                 }
-                familia.setNomeFamilia(nomeFamilia);
-                familiasDatabase.create(familia, new String[]{"nome"}, new Object[]{familia.getNomeFamilia()});
+                String familiaId = JOptionPane.showInputDialog(null, strFamiliaId, "Familias", JOptionPane.QUESTION_MESSAGE);
+                boolean teste = ValidaInput.stringEhInt(familiaId);
+                boolean teste2 = Integer.parseInt(familiaId) == 0;
+                System.out.println(teste + " " + teste2);
+                if (ValidaInput.stringEhInt(familiaId) && Integer.parseInt(familiaId) == 0) {
+                    String nomeFamilia = JOptionPane.showInputDialog("Digite o nome da família:");
+                    if (!ValidaInput.string(nomeFamilia)) {
+                        return; // Volta ao menu se cancelar ou fechar
+                    }
+                    familia.setNomeFamilia(nomeFamilia);
+                    String acessoF = "cf" + familia.getDataCriacao();
+                    String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
+                    familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
+                    familiasDatabase.insert(familia, new String[]{"nome", "acesso"}, new Object[]{familia.getNomeFamilia(), familia.getAcesso()});
+
+                } else {
+                    if (!ValidaInput.stringEhInt(strFamiliaId)){
+                        for (Familia f : todasFamilias){
+                            if (f.getID() == Integer.parseInt(familiaId)){
+                                familia = f;
+                            }
+                        }
+                        if (familia == null){
+                            JOptionPane.showMessageDialog(null, "Familia com ID " + familiaId + " não encontrada.");
+                            return;
+                        }
+                    }
+                }
                 // Vincula várias pessoas à família até que o usuário cancele
                 while (true) {
                     String pessoaId = JOptionPane.showInputDialog("Digite o ID do pessoa para vincular à família (ou clique Cancelar para terminar):");
@@ -763,10 +795,14 @@ public class Controller {
                         JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " não encontrada.");
                         continue; // Pede outro ID se a pessoa não for encontrada
                     }
-
-                    if (convidadosDatabase.getById(Integer.parseInt(pessoaId), new Convidado()) != null) {
-                        JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem convite vinculado.");
-                        continue; // Pede outro ID se a pessoa já for um convidado
+                    todosConvidados = convidadosDatabase.getAll(new Convidado());
+                    for (Convidado c : todosConvidados) {
+                        Pessoa p = c.getPessoa();
+                        if (p.getID() == Integer.parseInt(pessoaId)) {
+//                        if (convidadosDatabase.getById(Integer.parseInt(pessoaId), new Convidado()) != null) {
+                            JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem convite vinculado.");
+                            continue; // Pede outro ID se a pessoa já for um convidado
+                        }
                     }
 
                     // Cria um novo convidado e associa à família
@@ -775,11 +811,11 @@ public class Controller {
                     convidado.setFamilia(familia);
                     parentesco = "familia - " + familia.getNomeFamilia();
                     convidado.setParentesco(parentesco);
-                    String acessoF = "cf" + familia.getDataCriacao();
-                    String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
-                    familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
+//                    String acessoF = "cf" + familia.getDataCriacao();
+//                    String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
+//                    familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
                     // Salva o convidado no banco de dados
-                    convidadosDatabase.create(convidado, new String[]{"pessoa_id", "familia_id", "parentesco"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco()});
+                    convidadosDatabase.insert(convidado, new String[]{"pessoa_id", "familia_id", "parentesco"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco()});
                 }
 
                 JOptionPane.showMessageDialog(null, "Convidados familiares incluídos com sucesso!");
@@ -799,8 +835,8 @@ public class Controller {
                 if (convidado != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o convidado com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
-                        familiasDatabase.delete(familia.getID());
                         convidadosDatabase.delete(Integer.parseInt(idRemover));
+                        familiasDatabase.delete(familia.getID());
                         JOptionPane.showMessageDialog(null, "Convidado removido com sucesso!");
                     } else {
                         JOptionPane.showMessageDialog(null, "Remoção cancelada.");
@@ -919,7 +955,7 @@ public class Controller {
                 presente.setValorCota(valorCota);
 
                 // Adiciona ao banco de dados (ou lista)
-                presentesDatabase.create(presente, new String[]{"nome", "valor", "cotas", "valorcota", }, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()} );
+                presentesDatabase.insert(presente, new String[]{"nome", "valor", "cotas", "valorcota",}, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()});
                 JOptionPane.showMessageDialog(null, "Presente incluído com sucesso!");
 
                 return;
@@ -953,7 +989,7 @@ public class Controller {
 
                     presente.setCotas(Integer.parseInt(novasCotas));
 //                    presente.setDataModificacao();
-                    presentesDatabase.update(presente, new String[]{"nome", "valor", "cotas", "valorcota", }, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()});
+                    presentesDatabase.update(presente, new String[]{"nome", "valor", "cotas", "valorcota",}, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()});
                     JOptionPane.showMessageDialog(null, "Presente alterado com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(null, "Presente com ID " + idAlterar + " não encontrado.");
@@ -1096,7 +1132,7 @@ public class Controller {
                     }
 
                 }
-                pagamentosDatabase.create(pagamento, new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
+                pagamentosDatabase.insert(pagamento, new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
 
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
@@ -1105,7 +1141,7 @@ public class Controller {
                     stringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
                     calendario.setDescricao(stringDescricao);
                     calendario.setPagamento(pagamento);
-                    calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
+                    calendariosDatabase.insert(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
@@ -1114,7 +1150,7 @@ public class Controller {
                         stringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(stringDescricao);
                         calendario.setPagamento(pagamento);
-                        calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
+                        calendariosDatabase.insert(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                     }
                 }
 
@@ -1211,7 +1247,7 @@ public class Controller {
                     }
                 }
 //                pagamento.setDataModificacao();
-                pagamentosDatabase.update(pagamento,new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
+                pagamentosDatabase.update(pagamento, new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
                     calendario.setData(pagamento.getData());
@@ -1219,7 +1255,7 @@ public class Controller {
                     novaStringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
                     calendario.setDescricao(novaStringDescricao);
                     calendario.setPagamento(pagamento);
-                    calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
+                    calendariosDatabase.insert(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
@@ -1228,7 +1264,7 @@ public class Controller {
                         novaStringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(novaStringDescricao);
                         calendario.setPagamento(pagamento);
-                        calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
+                        calendariosDatabase.insert(calendario, new String[]{"dataevento", "titulo", "descricao", "pagamento_id"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao(), pagamento.getID()});
                     }
                 }
                 JOptionPane.showMessageDialog(null, "Pagamento atualizado com sucesso!");
@@ -1319,7 +1355,7 @@ public class Controller {
                     descricaoEvento = descricaoEvento.substring(0, 4000); // Trunca o texto para 4000 caracteres
                 }
                 calendario.setDescricao(descricaoEvento);
-               calendariosDatabase.create(calendario, new String[]{"dataevento", "titulo", "descricao"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao()});
+                calendariosDatabase.insert(calendario, new String[]{"dataevento", "titulo", "descricao"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao()});
 
                 JOptionPane.showMessageDialog(null, "Evento adicionado com sucesso!\n");
                 return;
@@ -1484,7 +1520,7 @@ public class Controller {
                             }
                         }
                         pessoa = presenteRecebido.getPessoa();
-                        presentesRecebidosDatabase.create(presenteRecebido, new String[]{"presente_id", "qtdcotas", "pessoa_id"}, new Object[]{presente.getID(), presenteRecebido.getQtdCotas(), pessoa.getID()});
+                        presentesRecebidosDatabase.insert(presenteRecebido, new String[]{"presente_id", "qtdcotas", "pessoa_id"}, new Object[]{presente.getID(), presenteRecebido.getQtdCotas(), pessoa.getID()});
                         JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
                     } else {
                         JOptionPane.showMessageDialog(null, "Presente Cancelado!");
@@ -1528,7 +1564,7 @@ public class Controller {
                                 if (confirmacao == JOptionPane.YES_OPTION) {
                                     c.setConfirmado(true); // Atualiza a confirmação
 //                                    c.setDataModificacao(); // Atualiza a data de modificação
-                                    convidadosDatabase.update(c, new String[]{"confirmado"}, new Object[]{c.isConfirmado() == true? 1 : 0}); // Salva no banco de dados
+                                    convidadosDatabase.update(c, new String[]{"confirmado"}, new Object[]{c.isConfirmado() == true ? 1 : 0}); // Salva no banco de dados
                                     JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
                                 } else {
                                     JOptionPane.showMessageDialog(null, "Confirmação de presença cancelada.");
@@ -1578,7 +1614,7 @@ public class Controller {
                                 if (confirmacao == JOptionPane.YES_OPTION) {
                                     convidadoConfirmar.setConfirmado(true); // Atualiza a confirmação
 //                                    convidadoConfirmar.setDataModificacao(); // Atualiza a data de modificação
-                                    convidadosDatabase.update(convidadoConfirmar, new String[]{"confirmado"}, new Object[]{convidadoConfirmar.isConfirmado() == true? 1 : 0});
+                                    convidadosDatabase.update(convidadoConfirmar, new String[]{"confirmado"}, new Object[]{convidadoConfirmar.isConfirmado() == true ? 1 : 0});
                                     JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o membro da família com ID: " + convidadoConfirmar.getID());
                                     return;
                                 } else {
@@ -1659,7 +1695,7 @@ public class Controller {
                         }
                         pessoa.setNome(nome);
                         presenteRecebido.setPessoa(pessoa);
-                        presentesRecebidosDatabase.create(presenteRecebido, new String[]{"pessoa_id", "presente_id", "qtdcotas"}, new Object[]{pessoa.getID(), presente.getID(), presenteRecebido.getQtdCotas()});
+                        presentesRecebidosDatabase.insert(presenteRecebido, new String[]{"pessoa_id", "presente_id", "qtdcotas"}, new Object[]{pessoa.getID(), presente.getID(), presenteRecebido.getQtdCotas()});
                         JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");
                     } else {
                         JOptionPane.showMessageDialog(null, "Presente Cancelado!");
@@ -1686,7 +1722,7 @@ public class Controller {
                     confirmacao = JOptionPane.showConfirmDialog(null, "Confirma deixar recado?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
                     if (confirmacao == JOptionPane.YES_OPTION) {
-                        muralRecadoDatabase.create(muralRecado, new String[]{"nome", "recado"}, new Object[]{muralRecado.getNome(), muralRecado.getRecado()});
+                        muralRecadoDatabase.insert(muralRecado, new String[]{"nome", "recado"}, new Object[]{muralRecado.getNome(), muralRecado.getRecado()});
                         JOptionPane.showMessageDialog(null, "Recado deixado com sucesso!\n");
                     } else {
                         JOptionPane.showMessageDialog(null, "Falha ao deixar Recado!\n");
@@ -1716,7 +1752,7 @@ public class Controller {
                 muralRecado.setNome(p.getNome());
             }
         }
-        muralRecadoDatabase.create(muralRecado, new String[]{"nome", "recado"}, new Object[]{muralRecado.getNome(), muralRecado.getRecado()});
+        muralRecadoDatabase.insert(muralRecado, new String[]{"nome", "recado"}, new Object[]{muralRecado.getNome(), muralRecado.getRecado()});
         return true;
     }
 
@@ -1783,12 +1819,12 @@ public class Controller {
             usuario.setAdmin(false);
         }
 
-        pessoasDatabase.create(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
+        pessoasDatabase.insert(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
         pessoa = pessoasDatabase.getById(pessoa.getID(), new Pessoa());
         usuario.setPessoa(pessoa);
 
         // Criar usuário no banco de dados
-        usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo", "admin", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true? 1 : 0, pessoa.getID()});
+        usuariosDatabase.insert(usuario, new String[]{"login", "senha", "tipo", "admin", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true ? 1 : 0, pessoa.getID()});
         JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
         return false;
     }

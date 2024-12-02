@@ -13,9 +13,9 @@ public class Familia extends Identifiable implements Database.RowMapper {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-//    public Familia() {
-//        this.dataCriacao = LocalDateTime.now();
-//    }
+    public Familia() {
+        this.dataCriacao = LocalDateTime.now();
+    }
 
     public void setNomeFamilia(String nomeFamilia) {
         this.nomeFamilia = nomeFamilia;
@@ -55,7 +55,7 @@ public class Familia extends Identifiable implements Database.RowMapper {
 
     @Override
     public String toString() {
-        return "FAMILIA => | id: " + super.getID() + "nomeFamilia: " + nomeFamilia + " | acesso: " + acesso + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
+        return "FAMILIA => | id: " + super.getID() + " | nomeFamilia: " + nomeFamilia + " | acesso: " + acesso + " | dc: " + dataCriacao + " | dm: " + dataModificacao + " |";
     }
 
     @Override
