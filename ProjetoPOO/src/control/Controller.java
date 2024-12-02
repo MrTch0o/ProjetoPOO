@@ -23,6 +23,7 @@ public class Controller {
     boolean controlForm = true; //Variavel para controle de Form;
     int escolha;
     MenuInicio menuInicio = new MenuInicio();
+    
 
     Pessoa pessoa;
     Usuario usuario;
@@ -327,7 +328,7 @@ public class Controller {
                         return;
                     }
 
-                    pessoa.setDataModificacao();
+//                    pessoa.setDataModificacao();
                     pessoasDatabase.update(pessoa, new String[]{"nome", "telefone", "datanascimento"}, new Object[]{pessoa.getNome(), pessoa.getTelefone(), pessoa.getNascimento()});
                     JOptionPane.showMessageDialog(null, "Pessoa alterada com sucesso!");
                 } else {
@@ -446,7 +447,7 @@ public class Controller {
                 }
 
                 // Criar usuário no banco de dados
-                usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), pessoa.getID()});
+                usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo","admin", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true? 1 : 0, pessoa.getID()});
 
                 JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
                 return;
@@ -483,10 +484,10 @@ public class Controller {
                     if (usuario.getTipo() == 0) {
                         usuario.setAdmin(true);
                     }
-                    usuario.setDataModificacao();
+//                    usuario.setDataModificacao();
 
                     //Atualizar registro no banco de dados
-                    usuariosDatabase.update(usuario, new String[]{"login", "senha", "tipo"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo()});
+                    usuariosDatabase.update(usuario, new String[]{"login", "senha", "tipo", "admin"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true? 1 : 0});
 
                     JOptionPane.showMessageDialog(null, "Usuário alterado com sucesso!");
                 } else {
@@ -630,7 +631,7 @@ public class Controller {
                     }
                     fornecedor.setTelefone(novoTelefone);
 
-                    fornecedor.setDataModificacao();
+//                    fornecedor.setDataModificacao();
 
                     //Atualizar registro no banco de dados
                     fornecedoresDatabase.update(fornecedor, new String[]{"razaosocial", "cpfcnpj", "telefone"}, new Object[]{fornecedor.getRazaoSocial(), fornecedor.getcpfCnpj(), fornecedor.getTelefone()});
@@ -951,7 +952,7 @@ public class Controller {
                     }
 
                     presente.setCotas(Integer.parseInt(novasCotas));
-                    presente.setDataModificacao();
+//                    presente.setDataModificacao();
                     presentesDatabase.update(presente, new String[]{"nome", "valor", "cotas", "valorcota", }, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()});
                     JOptionPane.showMessageDialog(null, "Presente alterado com sucesso!");
                 } else {
@@ -1209,7 +1210,7 @@ public class Controller {
                         calendariosDatabase.delete(c.getID());
                     }
                 }
-                pagamento.setDataModificacao();
+//                pagamento.setDataModificacao();
                 pagamentosDatabase.update(pagamento,new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
@@ -1354,7 +1355,7 @@ public class Controller {
                     novoDescricaoEvento = novoDescricaoEvento.substring(0, 4000); // Trunca o texto para 4000 caracteres
                 }
                 calendario.setDescricao(novoDescricaoEvento);
-                calendario.setDataModificacao();
+//                calendario.setDataModificacao();
                 calendariosDatabase.update(calendario, new String[]{"dataevento", "titulo", "descricao"}, new Object[]{calendario.getDataEvento(), calendario.getTitulo(), calendario.getDescricao()});
 
                 JOptionPane.showMessageDialog(null, "Evento Alterado com sucesso!\n");
@@ -1526,7 +1527,7 @@ public class Controller {
 
                                 if (confirmacao == JOptionPane.YES_OPTION) {
                                     c.setConfirmado(true); // Atualiza a confirmação
-                                    c.setDataModificacao(); // Atualiza a data de modificação
+//                                    c.setDataModificacao(); // Atualiza a data de modificação
                                     convidadosDatabase.update(c, new String[]{"confirmado"}, new Object[]{c.isConfirmado() == true? 1 : 0}); // Salva no banco de dados
                                     JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o convidado com ID: " + c.getID());
                                 } else {
@@ -1576,7 +1577,7 @@ public class Controller {
                                 confirmacao = JOptionPane.showConfirmDialog(null, detalhesPessoa, "Confirmação de Presença", JOptionPane.YES_NO_OPTION);
                                 if (confirmacao == JOptionPane.YES_OPTION) {
                                     convidadoConfirmar.setConfirmado(true); // Atualiza a confirmação
-                                    convidadoConfirmar.setDataModificacao(); // Atualiza a data de modificação
+//                                    convidadoConfirmar.setDataModificacao(); // Atualiza a data de modificação
                                     convidadosDatabase.update(convidadoConfirmar, new String[]{"confirmado"}, new Object[]{convidadoConfirmar.isConfirmado() == true? 1 : 0});
                                     JOptionPane.showMessageDialog(null, "Presença confirmada com sucesso para o membro da família com ID: " + convidadoConfirmar.getID());
                                     return;
@@ -1787,7 +1788,7 @@ public class Controller {
         usuario.setPessoa(pessoa);
 
         // Criar usuário no banco de dados
-        usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), pessoa.getID()});
+        usuariosDatabase.create(usuario, new String[]{"login", "senha", "tipo", "admin", "pessoa_id"}, new Object[]{usuario.getLogin(), usuario.getSenha(), usuario.getTipo(), usuario.isAdmin() == true? 1 : 0, pessoa.getID()});
         JOptionPane.showMessageDialog(null, "Usuário incluído com sucesso!");
         return false;
     }

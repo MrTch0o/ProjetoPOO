@@ -113,7 +113,7 @@
 //}
 package model.dao;
 
-import model.ConexaoMySQL;
+import model.dao.ConexaoMySQL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;

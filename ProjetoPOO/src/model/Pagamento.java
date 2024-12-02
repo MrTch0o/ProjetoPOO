@@ -20,9 +20,9 @@ public class Pagamento extends Identifiable implements Database.RowMapper<Pagame
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public Pagamento() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Pagamento() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
     
     public void setDataCriacao(LocalDateTime date){
         this.dataCriacao = date;
@@ -75,9 +75,9 @@ public class Pagamento extends Identifiable implements Database.RowMapper<Pagame
         return this.dataModificacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;
     }

@@ -10,9 +10,9 @@ public class MuralDeRecados extends Identifiable{
     private LocalDateTime dataModificacao;
     
     
-    public MuralDeRecados(){
-        dataCriacao = LocalDateTime.now();
-    }
+//    public MuralDeRecados(){
+//        dataCriacao = LocalDateTime.now();
+//    }
     
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;

@@ -19,9 +19,9 @@ public class Calendario extends Identifiable implements Database.RowMapper {
     private String dataEventoFormat;
     private Pagamento pagamento;
 
-    public Calendario() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Calendario() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public LocalDate getData() {
         return dataEvento;
@@ -59,9 +59,9 @@ public class Calendario extends Identifiable implements Database.RowMapper {
         return dataModificacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
 
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;

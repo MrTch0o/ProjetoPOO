@@ -15,9 +15,9 @@ public class Fornecedor extends Identifiable implements Database.RowMapper<Forne
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public Fornecedor() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Fornecedor() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public void setRazaoSocial(String razaoSocial) {
         this.razaoSocial = razaoSocial;
@@ -59,9 +59,9 @@ public class Fornecedor extends Identifiable implements Database.RowMapper<Forne
         return this.dataCriacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
     
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;

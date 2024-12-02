@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import model.dao.Database;
 import model.dao.Identifiable;
 
-public class PresenteRecebido extends Identifiable implements Database.RowMapper{
+public class PresenteRecebido extends Identifiable implements Database.RowMapper {
 
     private Presente presente;
     private Pessoa pessoa;
@@ -14,10 +14,9 @@ public class PresenteRecebido extends Identifiable implements Database.RowMapper
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public PresenteRecebido() {
-        this.dataCriacao = LocalDateTime.now();
-    }
-
+//    public PresenteRecebido() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
     public Presente getPresente() {
         return presente;
     }
@@ -45,6 +44,7 @@ public class PresenteRecebido extends Identifiable implements Database.RowMapper
     public LocalDateTime getDataCriacao() {
         return this.dataCriacao;
     }
+
     public void setDataCriacao(LocalDateTime date) {
         this.dataCriacao = date;
     }
@@ -53,9 +53,10 @@ public class PresenteRecebido extends Identifiable implements Database.RowMapper
         return dataModificacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
+
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;
     }
@@ -66,7 +67,7 @@ public class PresenteRecebido extends Identifiable implements Database.RowMapper
     }
 
     @Override
-     public PresenteRecebido mapRow(ResultSet rs) throws SQLException {
+    public PresenteRecebido mapRow(ResultSet rs) throws SQLException {
         PresenteRecebido presenteRecebido = new PresenteRecebido();
         presenteRecebido.setID(rs.getInt("id"));
         presenteRecebido.setQtdCotas(rs.getInt("qtdcotas"));
@@ -108,6 +109,5 @@ public class PresenteRecebido extends Identifiable implements Database.RowMapper
         return presenteRecebido;
 
     }
-    
 
 }

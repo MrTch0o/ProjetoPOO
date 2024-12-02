@@ -1,4 +1,4 @@
-package model;
+package model.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,7 +12,7 @@ public class ConexaoMySQL {
         properties.setProperty("password", "admin");
         properties.setProperty("useSSL", "false");
         properties.setProperty("useTimezone", "true");
-        properties.setProperty("serverTimezone", "UTC");
+        properties.setProperty("serverTimezone", "GMT-3");
         properties.setProperty("allowPublicKeyRetrieval", "true");
         String con = "jdbc:mysql://localhost/projetopoo";
         return DriverManager.getConnection(con, properties);

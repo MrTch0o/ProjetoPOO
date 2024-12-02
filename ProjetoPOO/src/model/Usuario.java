@@ -17,9 +17,9 @@ public class Usuario extends Identifiable implements Database.RowMapper<Usuario>
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public Usuario() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Usuario() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public int getTipo() {
         return tipo;
@@ -74,16 +74,16 @@ public class Usuario extends Identifiable implements Database.RowMapper<Usuario>
     }
 
     public void setDataCriacao(LocalDateTime date) {
-        this.dataModificacao = date;
+        this.dataCriacao = date;
     }
 
     public LocalDateTime getDataModificacao() {
         return dataModificacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
 
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;

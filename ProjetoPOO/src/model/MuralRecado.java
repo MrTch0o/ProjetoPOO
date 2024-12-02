@@ -13,9 +13,9 @@ public class MuralRecado extends Identifiable implements Database.RowMapper<Mura
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public MuralRecado() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public MuralRecado() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public LocalDateTime getDataCriacao() {
         return dataCriacao;

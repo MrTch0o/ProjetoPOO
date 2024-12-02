@@ -15,9 +15,9 @@ public class Presente extends Identifiable implements Database.RowMapper {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public Presente() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Presente() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public void setNome(String nome) {
         this.nome = nome;
@@ -63,9 +63,9 @@ public class Presente extends Identifiable implements Database.RowMapper {
         this.dataModificacao = date;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
 
     public LocalDateTime getDataModificacao() {
         return this.dataModificacao;

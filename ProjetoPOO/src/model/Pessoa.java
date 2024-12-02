@@ -1,6 +1,5 @@
 package model;
 
-import java.security.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -18,9 +17,9 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public Pessoa() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Pessoa() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public void setNome(String nome) {
         this.nome = nome;
@@ -54,9 +53,9 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
         return this.dataCriacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
 
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;

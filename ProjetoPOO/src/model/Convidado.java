@@ -15,9 +15,9 @@ public class Convidado extends Identifiable implements Database.RowMapper<Convid
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
 
-    public Convidado() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public Convidado() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
@@ -51,9 +51,9 @@ public class Convidado extends Identifiable implements Database.RowMapper<Convid
         return this.confirmado;
     }
 
-    public void setDataCriacao() {
-        this.dataCriacao = LocalDateTime.now();
-    }
+//    public void setDataCriacao() {
+//        this.dataCriacao = LocalDateTime.now();
+//    }
 
     public void setDataCriacao(LocalDateTime date) {
         this.dataCriacao = date;
@@ -63,9 +63,9 @@ public class Convidado extends Identifiable implements Database.RowMapper<Convid
         return this.dataCriacao;
     }
 
-    public void setDataModificacao() {
-        this.dataModificacao = LocalDateTime.now();
-    }
+//    public void setDataModificacao() {
+//        this.dataModificacao = LocalDateTime.now();
+//    }
 
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;
