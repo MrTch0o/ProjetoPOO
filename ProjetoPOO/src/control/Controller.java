@@ -835,6 +835,7 @@ public class Controller {
                 return;
 
             case 2: //remover por ID
+                int qtdConvFamilia = 0;
                 todosConvidados = convidadosDatabase.getAll(new Convidado());
                 String strConvidadoId = "Digite o ID do convidado para remover:" + "\n";
                 for (Convidado c : todosConvidados) {
@@ -844,18 +845,24 @@ public class Controller {
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
-                try {
-                    convidado = convidadosDatabase.getById(Integer.parseInt(idRemover), new Convidado());
-                    familia = convidado.getFamilia();
-                } catch (NullPointerException e) {
-                    return;
-                }
+                convidado = convidadosDatabase.getById(Integer.parseInt(idRemover), new Convidado());
                 if (convidado != null) {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o convidado com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
-                        convidadosDatabase.delete(Integer.parseInt(idRemover));
-                        familiasDatabase.delete(familia.getID());
+                        familia = convidado.getFamilia();
+                        convidadosDatabase.delete(convidado.getID());
                         JOptionPane.showMessageDialog(null, "Convidado removido com sucesso!");
+                        todosConvidados = convidadosDatabase.getAll(new Convidado());
+                        for (Convidado c : todosConvidados) {
+                            Familia familia2 = c.getFamilia();
+                            if (familia.getID() == familia2.getID()) {
+                                qtdConvFamilia++;
+                            }
+                        }
+                        if (qtdConvFamilia == 0) {
+                            familiasDatabase.delete(familia.getID());
+                            JOptionPane.showMessageDialog(null, "Familia: " + familia.getNomeFamilia() + " removido com sucesso. ");
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "Remoção cancelada.");
                     }
@@ -863,9 +870,10 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Convidado com ID " + idRemover + " não encontrada.");
                 }
                 return;
+
             case 3: //remover por convite familia
                 todasFamilias = familiasDatabase.getAll(new Familia());
-                String strFamiliaId = "Digite o ID da familia para remover:" + "\n";
+                strFamiliaId = "Digite o ID da familia para remover:" + "\n";
                 for (Familia f : todasFamilias) {
                     strFamiliaId += f.toString() + "\n";
                 }
@@ -908,8 +916,8 @@ public class Controller {
                         for (Familia f : todasFamilias) {
                             if (Integer.parseInt(familiaRemoverId) == f.getID()) {
                                 familia = f;
-                                familiasDatabase.delete(familia.getID());
                                 JOptionPane.showMessageDialog(null, "Familia: " + familia.getNomeFamilia() + " removido com sucesso. ");
+                                familiasDatabase.delete(familia.getID());
                             }
                         }
                     }
@@ -963,9 +971,7 @@ public class Controller {
                 if (!ValidaInput.string(valorPresente) || !ValidaInput.stringEhDouble(valorPresente)) {
                     return; // Volta ao menu se cancelar ou fechar
                 }
-                System.out.println(valorPresente);
                 String valorPresenteFormat = Utils.formatDouble(valorPresente);
-                System.out.println(valorPresenteFormat);
                 if (!ValidaInput.string(valorPresenteFormat)) { // Verifica se contem somente numero na string com virgula
                     return;
                 }
@@ -986,7 +992,12 @@ public class Controller {
                 return;
 
             case 1: //alterar presente
-                String idAlterar = JOptionPane.showInputDialog("Digite o ID do presente que deseja alterar:");
+                todosPresentes = presentesDatabase.getAll(new Presente());
+                String strPresenteId = "Digite o ID da presente que deseja alterar:" + "\n";
+                for (Presente p : todosPresentes) {
+                    strPresenteId += p.toString() + "\n";
+                }
+                String idAlterar = JOptionPane.showInputDialog(null, strPresenteId, "presentes", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) {
                     return;
                 }
@@ -1013,6 +1024,9 @@ public class Controller {
                     }
 
                     presente.setCotas(Integer.parseInt(novasCotas));
+                    valorCota = presente.getValor() / (double) presente.getCotas();
+                    presente.setValorCota(valorCota);
+
 //                    presente.setDataModificacao();
                     presentesDatabase.update(presente, new String[]{"nome", "valor", "cotas", "valorcota",}, new Object[]{presente.getNome(), presente.getValor(), presente.getCotas(), presente.getValorCota()});
                     JOptionPane.showMessageDialog(null, "Presente alterado com sucesso!");
@@ -1022,7 +1036,12 @@ public class Controller {
                 return;
 
             case 2: //remover presente
-                String idRemover = JOptionPane.showInputDialog("Digite o ID do presente que deseja remover:");
+                todosPresentes = presentesDatabase.getAll(new Presente());
+                strPresenteId = "Digite o ID da presente que deseja alterar:" + "\n";
+                for (Presente p : todosPresentes) {
+                    strPresenteId += p.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strPresenteId, "presentes", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) {
                     return;
                 }

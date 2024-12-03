@@ -95,6 +95,7 @@ public class Presente extends Identifiable implements Database.RowMapper {
         presente.setID(rs.getInt("id"));
         presente.setNome(rs.getString("nome"));
         presente.setValor(rs.getDouble("valor"));
+        presente.setCotas(rs.getInt("cotas"));
         presente.setValorCota(rs.getDouble("valorcota"));
         // Verifica se os campos não são nulos antes de converter
         java.sql.Timestamp dataCriacao = rs.getTimestamp("datacriacao");
