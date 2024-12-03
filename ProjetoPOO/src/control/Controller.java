@@ -56,6 +56,7 @@ public class Controller {
     Database<MuralRecado> muralRecadoDatabase = new Database<>("muralrecado");
     Utils utils = new Utils();
     Gerador gerador = new Gerador();
+    int vCount;
 
     public void main(String[] args) throws Exception {
 //        todasPessoas = pessoasDatabase.getAll(new Pessoa());
@@ -713,7 +714,6 @@ public class Controller {
                     strPessoaId += p.toString() + "\n";
                 }
                 String convidadoId = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
-//                String convidadoId = JOptionPane.showInputDialog("Digite o ID da pessoa para criar convidado:");
                 if (!ValidaInput.string(convidadoId) || !ValidaInput.stringEhInt(convidadoId)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -722,10 +722,18 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " não encontrada.");
                     return;
                 }
-                convidado = convidadosDatabase.getById(Integer.parseInt(convidadoId), new Convidado());
-                if (convidado != null) {
-                    JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " já tem convite vinculado.");
-                    return;
+//                convidado = convidadosDatabase.getById(Integer.parseInt(convidadoId), new Convidado());
+//                if (convidado != null) {
+//                    JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " já tem convite vinculado.");
+//                    return;
+//                }
+                todosConvidados = convidadosDatabase.getAll(new Convidado());
+                for (Convidado c : todosConvidados) {
+                    Pessoa p = c.getPessoa();
+                    if (p.getID() == Integer.parseInt(convidadoId)) {
+                        JOptionPane.showMessageDialog(null, "Pessoa com ID " + convidadoId + " já tem convite vinculado.");
+                        return; // Pede outro ID se a pessoa já for um convidado
+                    }
                 }
                 convidado = new Convidado();
                 convidado.setPessoa(pessoa);
@@ -749,43 +757,52 @@ public class Controller {
                 return;
 
             case 1: //incluir convite familia
+                vCount = 0;
                 familia = new Familia();
                 todasFamilias = familiasDatabase.getAll(new Familia());
-                String strFamiliaId = "Digite o ID da familia para criar convidado ou '0' para criar uma nova familia:" + "\n";
+                String strFamiliaId = "Digite o ID da familia para criar convite ou '0' para criar uma nova familia:" + "\n";
                 for (Familia f : todasFamilias) {
                     strFamiliaId += f.toString() + "\n";
                 }
                 String familiaId = JOptionPane.showInputDialog(null, strFamiliaId, "Familias", JOptionPane.QUESTION_MESSAGE);
-                boolean teste = ValidaInput.stringEhInt(familiaId);
-                boolean teste2 = Integer.parseInt(familiaId) == 0;
-                System.out.println(teste + " " + teste2);
-                if (ValidaInput.stringEhInt(familiaId) && Integer.parseInt(familiaId) == 0) {
-                    String nomeFamilia = JOptionPane.showInputDialog("Digite o nome da família:");
-                    if (!ValidaInput.string(nomeFamilia)) {
-                        return; // Volta ao menu se cancelar ou fechar
-                    }
-                    familia.setNomeFamilia(nomeFamilia);
-                    String acessoF = "cf" + familia.getDataCriacao();
-                    String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
-                    familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
-                    familiasDatabase.insert(familia, new String[]{"nome", "acesso"}, new Object[]{familia.getNomeFamilia(), familia.getAcesso()});
-
+                if (!ValidaInput.string(familiaId) || !ValidaInput.stringEhInt(familiaId)) {
+                    return;
                 } else {
-                    if (!ValidaInput.stringEhInt(strFamiliaId)){
-                        for (Familia f : todasFamilias){
-                            if (f.getID() == Integer.parseInt(familiaId)){
-                                familia = f;
-                            }
+                    if (Integer.parseInt(familiaId) == 0) {
+                        String nomeFamilia = JOptionPane.showInputDialog("Digite o nome da família:");
+                        if (!ValidaInput.string(nomeFamilia)) {
+                            return; // Volta ao menu se cancelar ou fechar
                         }
-                        if (familia == null){
-                            JOptionPane.showMessageDialog(null, "Familia com ID " + familiaId + " não encontrada.");
-                            return;
+                        familia.setNomeFamilia(nomeFamilia);
+                        String acessoF = "cf" + familia.getDataCriacao();
+                        String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
+                        familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
+                        familiasDatabase.insert(familia, new String[]{"nome", "acesso"}, new Object[]{familia.getNomeFamilia(), familia.getAcesso()});
+                        JOptionPane.showMessageDialog(null, "Familia inserida com sucesso!");
+
+                    } else {
+                        if (ValidaInput.stringEhInt(familiaId) && Integer.parseInt(familiaId) != 0) {
+                            for (Familia f : todasFamilias) {
+                                if (f.getID() == Integer.parseInt(familiaId)) {
+                                    familia = f;
+                                }
+                            }
+                            if (familia == null) {
+                                JOptionPane.showMessageDialog(null, "Familia com ID " + familiaId + " não encontrada.");
+                                return;
+                            }
                         }
                     }
                 }
                 // Vincula várias pessoas à família até que o usuário cancele
                 while (true) {
-                    String pessoaId = JOptionPane.showInputDialog("Digite o ID do pessoa para vincular à família (ou clique Cancelar para terminar):");
+                    todasPessoas = pessoasDatabase.getAll(new Pessoa());
+                    strPessoaId = "Digite o ID do pessoa para vincular à família (ou clique Cancelar para terminar):" + "\n";
+                    for (Pessoa p : todasPessoas) {
+                        strPessoaId += p.toString() + "\n";
+                    }
+                    String pessoaId = JOptionPane.showInputDialog(null, strPessoaId, "Pessoas", JOptionPane.QUESTION_MESSAGE);
+//                    String pessoaId = JOptionPane.showInputDialog("Digite o ID do pessoa para vincular à família (ou clique Cancelar para terminar):");
                     if (!ValidaInput.string(pessoaId) || !ValidaInput.stringEhInt(pessoaId)) {
                         break; // Sai do loop se o usuário cancelar ou o ID não for válido
                     }
@@ -799,30 +816,31 @@ public class Controller {
                     for (Convidado c : todosConvidados) {
                         Pessoa p = c.getPessoa();
                         if (p.getID() == Integer.parseInt(pessoaId)) {
-//                        if (convidadosDatabase.getById(Integer.parseInt(pessoaId), new Convidado()) != null) {
                             JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem convite vinculado.");
-                            continue; // Pede outro ID se a pessoa já for um convidado
+                            return; // Pede outro ID se a pessoa já for um convidado
                         }
                     }
-
                     // Cria um novo convidado e associa à família
                     convidado = new Convidado();
                     convidado.setPessoa(pessoa);
                     convidado.setFamilia(familia);
                     parentesco = "familia - " + familia.getNomeFamilia();
                     convidado.setParentesco(parentesco);
-//                    String acessoF = "cf" + familia.getDataCriacao();
-//                    String acessoFormatadoF = "cf" + acessoF.substring(acessoF.length() - 6);
-//                    familia.setAcesso(acessoFormatadoF); // Somente o primeiro membro terá o acesso
                     // Salva o convidado no banco de dados
                     convidadosDatabase.insert(convidado, new String[]{"pessoa_id", "familia_id", "parentesco"}, new Object[]{pessoa.getID(), familia.getID(), convidado.getParentesco()});
+                    vCount++;
                 }
 
-                JOptionPane.showMessageDialog(null, "Convidados familiares incluídos com sucesso!");
+                JOptionPane.showMessageDialog(null, vCount > 0 ? "Convidados familiares incluídos com sucesso!" : "Nenhum convidado incluído!");
                 return;
 
             case 2: //remover por ID
-                String idRemover = JOptionPane.showInputDialog("Digite o ID do convidado:");
+                todosConvidados = convidadosDatabase.getAll(new Convidado());
+                String strConvidadoId = "Digite o ID do convidado para remover:" + "\n";
+                for (Convidado c : todosConvidados) {
+                    strConvidadoId += c.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strConvidadoId, "Convidados", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -846,8 +864,14 @@ public class Controller {
                 }
                 return;
             case 3: //remover por convite familia
-                String familiaRemover = JOptionPane.showInputDialog(null, "Digite nome da familia que deseja remover os convites:");
-                if (!ValidaInput.string(familiaRemover)) {
+                todasFamilias = familiasDatabase.getAll(new Familia());
+                String strFamiliaId = "Digite o ID da familia para remover:" + "\n";
+                for (Familia f : todasFamilias) {
+                    strFamiliaId += f.toString() + "\n";
+                }
+                String familiaRemoverId = JOptionPane.showInputDialog(null, strFamiliaId, "Convidados", JOptionPane.QUESTION_MESSAGE);
+//                String familiaRemover = JOptionPane.showInputDialog(null, "Digite nome da familia que deseja remover os convites:");
+                if (!ValidaInput.string(familiaRemoverId) || !ValidaInput.string(familiaRemoverId)) {
                     return;
                 }
                 todosConvidados = convidadosDatabase.getAll(new Convidado());
@@ -857,16 +881,16 @@ public class Controller {
                 int qtdRemovidos = 0;
                 for (Convidado c : todosConvidados) {
                     familia = c.getFamilia();
-                    if (familiaRemover.equals(familia.getNomeFamilia())) {
+                    if (Integer.parseInt(familiaRemoverId) == familia.getID()) {
                         qtdConvites++;
                     }
                 }
                 if (qtdConvites == 0) {
-                    JOptionPane.showMessageDialog(null, "Não encontrado convite para família " + familiaRemover);
+                    JOptionPane.showMessageDialog(null, "Não encontrado convite para família de ID: " + familiaRemoverId);
                 } else {
                     for (Convidado c : todosConvidados) {
                         familia = c.getFamilia();
-                        if (familiaRemover.equals(familia.getNomeFamilia())) {
+                        if (Integer.parseInt(familiaRemoverId) == familia.getID()) {
                             int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o convidado com ID " + c.getID() + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                             if (confirmacao == JOptionPane.YES_OPTION) {
                                 convidadosDatabase.delete(c.getID());
@@ -878,12 +902,13 @@ public class Controller {
                         }
                     }
                     if (qtdRemovidos > 0) {
-                        JOptionPane.showMessageDialog(null, "Foram removidos " + qtdRemovidos + " convites da família " + familiaRemover + " de um total de " + qtdConvites + " convites.");
+                        JOptionPane.showMessageDialog(null, "Foram removidos " + qtdRemovidos + " convites da família de ID " + familiaRemoverId + " de um total de " + qtdConvites + " convites.");
                     }
                     if (qtdRemovidos == qtdConvites) {
                         for (Familia f : todasFamilias) {
-                            if (familiaRemover.equals(f.getNomeFamilia())) {
+                            if (Integer.parseInt(familiaRemoverId) == f.getID()) {
                                 familia = f;
+                                familiasDatabase.delete(familia.getID());
                                 JOptionPane.showMessageDialog(null, "Familia: " + familia.getNomeFamilia() + " removido com sucesso. ");
                             }
                         }
