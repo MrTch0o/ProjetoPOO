@@ -16,19 +16,26 @@ public class Calendario extends Identifiable implements Database.RowMapper {
     private String descricao;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
-    private String dataEventoFormat;
+//    private String dataEventoFormat;
     private Pagamento pagamento;
 
 //    public Calendario() {
 //        this.dataCriacao = LocalDateTime.now();
 //    }
 
-    public LocalDate getData() {
+//    public LocalDate getData() {
+//        return dataEvento;
+//    }
+//
+//    public void setData(LocalDate data) {
+//        this.dataEvento = data;
+//    }
+    public LocalDate getDataEvento() {
         return dataEvento;
     }
 
-    public void setData(LocalDate data) {
-        this.dataEvento = data;
+    public void setDataEvento(LocalDate dataEvento) {
+        this.dataEvento = dataEvento;
     }
 
     public String getTitulo() {
@@ -67,21 +74,14 @@ public class Calendario extends Identifiable implements Database.RowMapper {
         this.dataModificacao = date;
     }
 
-    public String getDataEventoFormat() {
-        return dataEventoFormat;
-    }
+//    public String getDataEventoFormat() {
+//        return dataEventoFormat;
+//    }
+//
+//    public void setDataEventoFormat(String dataEventoFormat) {
+//        this.dataEventoFormat = dataEventoFormat;
+//    }
 
-    public void setDataEventoFormat(String dataEventoFormat) {
-        this.dataEventoFormat = dataEventoFormat;
-    }
-
-    public LocalDate getDataEvento() {
-        return dataEvento;
-    }
-
-    public void setDataEvento(LocalDate dataEvento) {
-        this.dataEvento = dataEvento;
-    }
 
     public Pagamento getPagamento() {
         return pagamento;
@@ -101,7 +101,8 @@ public class Calendario extends Identifiable implements Database.RowMapper {
     public Calendario mapRow(ResultSet rs) throws SQLException {
         Calendario calendario = new Calendario();
         calendario.setID(rs.getInt("id"));
-        dataEvento = rs.getTimestamp("dataevento").toLocalDateTime().toLocalDate();
+        dataEvento = rs.getDate("dataevento").toLocalDate();
+        calendario.setDataEvento(dataEvento);
         calendario.setTitulo(rs.getString("titulo"));
         calendario.setDescricao(rs.getString("descricao"));
 

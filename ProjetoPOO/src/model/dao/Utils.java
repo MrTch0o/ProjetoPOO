@@ -29,7 +29,7 @@ public class Utils extends Identifiable{
             String parteDecimal = partes.length > 1 ? partes[1] : "";
 
             // Se a parte decimal tem menos de 2 dígitos, completar com zeros
-            while (parteDecimal.length() < 2) {
+            while (parteDecimal.length() <= 2) {
                 parteDecimal += "0";
             }
             // Retorna a string formatada com duas casas decimais

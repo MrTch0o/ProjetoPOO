@@ -419,9 +419,13 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " não encontrada.");
                     return;
                 }
-                if (usuariosDatabase.getById(Integer.parseInt(pessoaId), new Usuario()) != null) {
-                    JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem usuário vinculado.");
-                    return;
+                todosUsuarios = usuariosDatabase.getAll(new Usuario());
+                for (Usuario u : todosUsuarios) {
+                    Pessoa pessoaUsuario = u.getPessoa();
+                    if (pessoa.getID() == pessoaUsuario.getID()) {
+                        JOptionPane.showMessageDialog(null, "Pessoa com ID " + pessoaId + " já tem usuario vinculado.");
+                        return;
+                    }
                 }
 
                 usuario.setPessoa(pessoa);
@@ -570,11 +574,14 @@ public class Controller {
                     JOptionPane.showMessageDialog(null, "Pessoa com ID " + fornecedorId + " não encontrada.");
                     return;
                 }
-                if (fornecedoresDatabase.getById(Integer.parseInt(fornecedorId), new Fornecedor()) != null) {
-                    JOptionPane.showMessageDialog(null, "Pessoa com ID " + fornecedorId + " já tem fornecedor vinculado.");
-                    return;
+                todosFornecedores = fornecedoresDatabase.getAll(new Fornecedor());
+                for (Fornecedor f : todosFornecedores) {
+                    Pessoa pessoaFornecedor = f.getPessoa();
+                    if (pessoa.getID() == pessoaFornecedor.getID()) {
+                        JOptionPane.showMessageDialog(null, "Pessoa com ID " + fornecedorId + " já tem fornecedor vinculado.");
+                        return;
+                    }
                 }
-
                 fornecedor.setPessoa(pessoa);
 
                 String razaoSocial = JOptionPane.showInputDialog("Digite a Razão Social ou Nome Fantasia do fornecedor:");
@@ -1185,7 +1192,7 @@ public class Controller {
 
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
-                    calendario.setData(pagamento.getData());
+                    calendario.setDataEvento(pagamento.getData());
                     calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                     stringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
                     calendario.setDescricao(stringDescricao);
@@ -1194,7 +1201,7 @@ public class Controller {
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
-                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(intervaloPagamento) * (i + 1))))));
+                        calendario.setDataEvento(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(intervaloPagamento) * (i + 1))))));
                         calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                         stringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(stringDescricao);
@@ -1233,7 +1240,7 @@ public class Controller {
                     return;
                 }
                 pagamento.setFornecedor(fornecedor);
-                String novoValorPagamento = JOptionPane.showInputDialog("Digite o novo valor do pagamento:", pagamento.getValor());
+                String novoValorPagamento = JOptionPane.showInputDialog("Digite o novo valor do pagamento:", Utils.formatDouble(String.valueOf(pagamento.getValor())));
                 if (!ValidaInput.string(novoValorPagamento) || !ValidaInput.stringEhDouble(novoValorPagamento)) { // Verifica se contem somente numero na string com virgula
                     return;
                 }
@@ -1265,7 +1272,7 @@ public class Controller {
                 }
 
                 //define a data do pagamento
-                String novaDataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd-MM-yyyy):", pagamento.getData());
+                String novaDataPagamento = JOptionPane.showInputDialog("Digite a data do pagamento (dd-MM-yyyy):", utils.formatDateToString(pagamento.getData()));
                 if (!ValidaInput.string(novaDataPagamento)) {
                     return;
                 }
@@ -1304,7 +1311,7 @@ public class Controller {
                 pagamentosDatabase.update(pagamento, new String[]{"data", "fornecedor_id", "valor", "tipo", "parcelas", "descricao"}, new Object[]{pagamento.getData(), fornecedor.getID(), pagamento.getValor(), pagamento.getTipo(), pagamento.getParcela(), pagamento.getDescricao()});
                 if (pagamento.getTipo() == 1) {
                     calendario = new Calendario();
-                    calendario.setData(pagamento.getData());
+                    calendario.setDataEvento(pagamento.getData());
                     calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                     novaStringDescricao = "Pagamento a vista - " + pagamento.getDescricao();
                     calendario.setDescricao(novaStringDescricao);
@@ -1313,7 +1320,7 @@ public class Controller {
                 } else {
                     for (int i = 0; i < pagamento.getParcela(); i++) {
                         calendario = new Calendario();
-                        calendario.setData(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(novoIntervaloPagamento) * (i + 1))))));
+                        calendario.setDataEvento(pagamento.getData().plusDays(Long.parseLong(String.valueOf((Integer.parseInt(novoIntervaloPagamento) * (i + 1))))));
                         calendario.setTitulo("Pagamento Fornecedor " + fornecedor.getID() + " - " + fornecedor.getRazaoSocial());
                         novaStringDescricao = "Pagamento a prazo - " + (i + 1) + " de " + pagamento.getParcela() + " | " + pagamento.getDescricao();
                         calendario.setDescricao(novaStringDescricao);
@@ -1340,7 +1347,8 @@ public class Controller {
                     int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o pagamento com ID " + idRemover + "?", "Confirmação", JOptionPane.YES_NO_OPTION);
                     if (confirmacao == JOptionPane.YES_OPTION) {
                         for (Calendario c : todosCalendarios) {
-                            if (c.getPagamento() == pagamento) {
+                            Pagamento pagamento2 = c.getPagamento();
+                            if (pagamento2.getID() == pagamento.getID()) {
                                 calendariosDatabase.delete(c.getID());
                             }
                         }
@@ -1394,7 +1402,7 @@ public class Controller {
                     return;
                 }
                 try {
-                    calendario.setData(utils.formatDate(dataEvento));
+                    calendario.setDataEvento(utils.formatDate(dataEvento));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
@@ -1420,17 +1428,22 @@ public class Controller {
                 return;
 
             case 1://alterar evento
-                String idAlterar = JOptionPane.showInputDialog("Digite o ID da data do evento:");
+                todosCalendarios = calendariosDatabase.getAll(new Calendario());
+                String strCalendarioId = "Digite o ID da data do evento:" + "\n";
+                for (Calendario c : todosCalendarios) {
+                    strCalendarioId += c.toString() + "\n";
+                }
+                String idAlterar = JOptionPane.showInputDialog(null, strCalendarioId, "Calendarios", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) {
                     return;
                 }
                 calendario = calendariosDatabase.getById(Integer.parseInt(idAlterar), new Calendario());
-                String novoDataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):", calendario.getData());
+                String novoDataEvento = JOptionPane.showInputDialog("Digite a data do evento (dd-MM-yyyy):", utils.formatDateToString(calendario.getDataEvento()));
                 if (!ValidaInput.string(novoDataEvento)) {
                     return;
                 }
                 try {
-                    calendario.setData(utils.formatDate(novoDataEvento));
+                    calendario.setDataEvento(utils.formatDate(novoDataEvento));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Data inválida");
                     return;
@@ -1491,7 +1504,7 @@ public class Controller {
                 if (!todosCalendarios.isEmpty()) {
                     String strCalendarios = "";
                     for (Calendario c : todosCalendarios) {
-                        if (dH.isEqual(c.getData())) {
+                        if (dH.isEqual(c.getDataEvento())) {
                             strCalendarios += c.toString() + "\n";
                         }
                     }
