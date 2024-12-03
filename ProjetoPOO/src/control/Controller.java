@@ -1102,7 +1102,12 @@ public class Controller {
                 //calendario = new Calendario();
 
                 //define o fornecedor do pagamento
-                String fornecedorId = JOptionPane.showInputDialog("Digite o ID do fornecedor:");
+                todosFornecedores = fornecedoresDatabase.getAll(new Fornecedor());
+                String strFornecedorId = "Digite o ID do fornecedor para incluir pagamento:" + "\n";
+                for (Fornecedor f : todosFornecedores) {
+                    strFornecedorId += f.toString() + "\n";
+                }
+                String fornecedorId = JOptionPane.showInputDialog(null, strFornecedorId, "presentes", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(fornecedorId) || !ValidaInput.stringEhInt(fornecedorId)) { // Verifica se contem somente numero na string
                     return;
                 }
@@ -1201,9 +1206,14 @@ public class Controller {
                 JOptionPane.showMessageDialog(null, "Pagamento incluído com sucesso!");
                 return;
 
-            case 1://alterar pagamento  
+            case 1://alterar pagamento 
 
-                String idAlterar = JOptionPane.showInputDialog("Digite o ID do pagamento para alterar");
+                todosPagamentos = pagamentosDatabase.getAll(new Pagamento());
+                String strPagamentoId = "Digite o ID do pagamento para alterar:" + "\n";
+                for (Pagamento p : todosPagamentos) {
+                    strPagamentoId += p.toString() + "\n";
+                }
+                String idAlterar = JOptionPane.showInputDialog(null, strPagamentoId, "presentes", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idAlterar) || !ValidaInput.stringEhInt(idAlterar)) {
                     return;
                 }
@@ -1315,7 +1325,12 @@ public class Controller {
                 return;
 
             case 2://remover pagamento ID
-                String idRemover = JOptionPane.showInputDialog("Digite o ID do pagmento:");
+                todosPagamentos = pagamentosDatabase.getAll(new Pagamento());
+                strPagamentoId = "Digite o ID do pagamento para remover:" + "\n";
+                for (Pagamento p : todosPagamentos) {
+                    strPagamentoId += p.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strPagamentoId, "presentes", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) { // Verifica se contem somente numero na string
                     return;
                 }
