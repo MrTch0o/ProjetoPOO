@@ -1240,7 +1240,7 @@ public class Controller {
                     return;
                 }
                 pagamento.setFornecedor(fornecedor);
-                String novoValorPagamento = JOptionPane.showInputDialog("Digite o novo valor do pagamento:", Utils.formatDouble(String.valueOf(pagamento.getValor())));
+                String novoValorPagamento = JOptionPane.showInputDialog("Digite o novo valor do pagamento:", utils.formatComma(pagamento.getValor()));
                 if (!ValidaInput.string(novoValorPagamento) || !ValidaInput.stringEhDouble(novoValorPagamento)) { // Verifica se contem somente numero na string com virgula
                     return;
                 }
@@ -1303,7 +1303,7 @@ public class Controller {
                 todosCalendarios = calendariosDatabase.getAll(new Calendario());
                 for (Calendario c : todosCalendarios) {
                     Pagamento calendarioPagamento = c.getPagamento();
-                    if (calendarioPagamento.getID() == Integer.parseInt(idAlterar)) {
+                    if (calendarioPagamento != null && calendarioPagamento.getID() == Integer.parseInt(idAlterar)) {
                         calendariosDatabase.delete(c.getID());
                     }
                 }
@@ -1348,7 +1348,7 @@ public class Controller {
                     if (confirmacao == JOptionPane.YES_OPTION) {
                         for (Calendario c : todosCalendarios) {
                             Pagamento pagamento2 = c.getPagamento();
-                            if (pagamento2.getID() == pagamento.getID()) {
+                            if (pagamento2 != null && pagamento2.getID() == pagamento.getID()) {
                                 calendariosDatabase.delete(c.getID());
                             }
                         }
@@ -1470,7 +1470,12 @@ public class Controller {
                 return;
 
             case 2://remover evento
-                String idRemover = JOptionPane.showInputDialog("Digite o ID do evento que deseja excluir:");
+                todosCalendarios = calendariosDatabase.getAll(new Calendario());
+                strCalendarioId = "Digite o ID do evento que deseja excluir:" + "\n";
+                for (Calendario c : todosCalendarios) {
+                    strCalendarioId += c.toString() + "\n";
+                }
+                String idRemover = JOptionPane.showInputDialog(null, strCalendarioId, "Calendarios", JOptionPane.QUESTION_MESSAGE);
                 if (!ValidaInput.string(idRemover) || !ValidaInput.stringEhInt(idRemover)) {
                     return;
                 }
@@ -1648,7 +1653,8 @@ public class Controller {
                                 // Mostrar todos os membros da família
                                 String membrosFamilia = "";
                                 for (Convidado membro : todosConvidados) {
-                                    if (membro.getFamilia().equals(f)) {
+                                    Familia f2 = membro.getFamilia();
+                                    if (f2.getID() == f.getID()) {
                                         membrosFamilia += membro.getPessoa().toString() + "\n";
                                     }
                                 }
@@ -1664,7 +1670,8 @@ public class Controller {
 
                                 // Busca o convidado pelo ID
                                 for (Convidado membro : todosConvidados) {
-                                    if (membro.getPessoa().getID() == idConfirmar && membro.getFamilia().equals(f)) {
+                                    Familia f3 = membro.getFamilia();
+                                    if (membro.getPessoa().getID() == idConfirmar && f3.getAcesso().equals(codigoAcesso)) {
                                         convidadoConfirmar = membro;
                                         break;
                                     }
@@ -1766,6 +1773,7 @@ public class Controller {
                             return; // Volta ao menu se cancelar ou fechar
                         }
                         pessoa.setNome(nome);
+                        pessoasDatabase.insert(pessoa, new String[]{"nome"}, new Object[]{pessoa.getNome()});
                         presenteRecebido.setPessoa(pessoa);
                         presentesRecebidosDatabase.insert(presenteRecebido, new String[]{"pessoa_id", "presente_id", "qtdcotas"}, new Object[]{pessoa.getID(), presente.getID(), presenteRecebido.getQtdCotas()});
                         JOptionPane.showMessageDialog(null, "Presente dado com sucesso!\nCotas restantes atualizadas.");

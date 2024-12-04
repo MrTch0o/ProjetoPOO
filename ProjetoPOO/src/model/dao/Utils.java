@@ -1,5 +1,6 @@
 package model.dao;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -42,5 +43,12 @@ public class Utils extends Identifiable{
             return null;
         }
 
+    }
+    
+    public String formatComma(double number){
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+        decimalFormat.setDecimalSeparatorAlwaysShown(true);
+        String numeroFormatado = decimalFormat.format(number);
+        return numeroFormatado;
     }
 }
