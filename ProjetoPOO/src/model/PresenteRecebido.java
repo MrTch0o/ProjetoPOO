@@ -56,14 +56,23 @@ public class PresenteRecebido extends Identifiable implements Database.RowMapper
 //    public void setDataModificacao() {
 //        this.dataModificacao = LocalDateTime.now();
 //    }
-
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;
     }
 
+//    @Override
+//    public String toString() {
+//        return "PRESENTE RECEBIDO => | pessoa: " + pessoa.getNome() + " | presente: " + presente.getNome() + "| qtdCotas: " + qtdCotas + " | dc" + dataCriacao + " | dm: " + dataModificacao + " |";
+//    }
     @Override
     public String toString() {
-        return "PRESENTE RECEBIDO => | pessoa: " + pessoa.getNome() + " | presente: " + presente.getNome() + "| qtdCotas: " + qtdCotas + " | dc" + dataCriacao + " | dm: " + dataModificacao + " |";
+        return "PRESENTE RECEBIDO => "
+                + "| pessoa: " + (pessoa != null && pessoa.getNome() != null ? pessoa.getNome() : "N/A")
+                + " | presente: " + (presente != null && presente.getNome() != null ? presente.getNome() : "N/A")
+                + " | qtdCotas: " + qtdCotas
+                + " | data de criação: " + (dataCriacao != null ? dataCriacao : "N/A")
+                + " | data de modificação: " + (dataModificacao != null ? dataModificacao : "N/A")
+                + " |";
     }
 
     @Override
