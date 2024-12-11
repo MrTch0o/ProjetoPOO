@@ -1,8 +1,15 @@
 package control;
 
 import java.awt.HeadlessException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import model.Pessoa;
 import model.Usuario;
@@ -14,8 +21,24 @@ import model.Calendario;
 import model.MuralRecado;
 import model.Presente;
 import model.PresenteRecebido;
+import model.dao.ConexaoMySQL;
+//import model.dao.ConexaoMySQL;
 import model.dao.Database;
 import model.dao.Utils;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JRViewer;
+import net.sf.jasperreports.view.JasperViewer;
+//import net.sf.jasperreports.engine.JRException;
+//import net.sf.jasperreports.engine.JasperFillManager;
+//import net.sf.jasperreports.engine.JasperPrint;
+//import net.sf.jasperreports.engine.JasperReport;
+//import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+//import net.sf.jasperreports.engine.util.JRLoader;
+//import net.sf.jasperreports.view.JasperViewer;
 import view.MenuInicio;
 
 public class Controller {
@@ -58,7 +81,7 @@ public class Controller {
     Gerador gerador = new Gerador();
     int vCount;
 
-    public void main(String[] args) throws Exception {
+    public void iniciarPrograma() throws Exception {
 //        todasPessoas = pessoasDatabase.getAll(new Pessoa());
 //        for(Pessoa p : todasPessoas){
 //        System.out.println(p.toString());
@@ -1070,11 +1093,26 @@ public class Controller {
             case 3: // Visualizar Presentes Cadastrados
                 todosPresentes = presentesDatabase.getAll(new Presente());
                 if (!todosPresentes.isEmpty()) {
-                    String strPresentes = "";
-                    for (int i = 0; i < todosPresentes.size(); i++) {
-                        strPresentes += todosPresentes.get(i).toString() + "\n";
+//                    String strPresentes = "";
+//                    for (int i = 0; i < todosPresentes.size(); i++) {
+//                        strPresentes += todosPresentes.get(i).toString() + "\n";
+//                    }
+//                    JOptionPane.showMessageDialog(null, strPresentes);
+//                    
+                    String path = "C:/Users/DEVENG/Documents/GitHub/presentes.jasper";
+                    Map<String, Object> params = new HashMap<>();
+                    try (Connection conn = ConexaoMySQL.getConexao()) {
+                        try {
+                            params.put("P_ID", 1);
+//                            JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(path);
+                            JasperPrint jasperPrint = JasperFillManager.fillReport(path, null, conn);
+                            JasperViewer.viewReport(jasperPrint, false);
+                        } catch (JRException ex) {
+                            JOptionPane.showMessageDialog(null, ex);
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, e);
                     }
-                    JOptionPane.showMessageDialog(null, strPresentes);
                 } else {
                     JOptionPane.showMessageDialog(null, "Nenhum presente cadastrado.");
                 }
@@ -1091,7 +1129,6 @@ public class Controller {
                 } else {
                     JOptionPane.showMessageDialog(null, "Nenhum presente recebido.");
                 }
-                return;
         }
     }
 

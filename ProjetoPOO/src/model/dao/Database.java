@@ -18,7 +18,7 @@ public class Database<T extends Identifiable> {
 
     // Método para adicionar uma nova entidade no banco
     public void insert(T datum, String[] columns, Object[] values) {
-        String query = buildInsertQuery(columns);
+        String query = buildInsertQuery(tableName, columns);
 
         try (Connection conn = ConexaoMySQL.getConexao(); PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -111,9 +111,9 @@ public class Database<T extends Identifiable> {
 //                if (cache.containsKey(id)) {
 //                    results.add(cache.get(id)); // Usa o cache se já estiver presente
 //                } else {
-                    T obj = mapper.mapRow(rs);
-                    cache.put(id, obj); // Adiciona ao cache
-                    results.add(obj);
+                T obj = mapper.mapRow(rs);
+                cache.put(id, obj); // Adiciona ao cache
+                results.add(obj);
 //                }
             }
 
@@ -128,14 +128,29 @@ public class Database<T extends Identifiable> {
         cache.clear();
     }
 
-    // Método auxiliar para construir a query INSERT
-    private String buildInsertQuery(String[] columns) {
-        StringBuilder query = new StringBuilder("INSERT INTO " + tableName + " (");
+//    // Método auxiliar para construir a query INSERT
+//    private String buildInsertQuery(String[] columns) {
+//        StringBuilder query = new StringBuilder("INSERT INTO " + tableName + " (");
+//        query.append(String.join(", ", columns));
+//        query.append(") VALUES (");
+//        query.append("?, ".repeat(columns.length));
+//        query.setLength(query.length() - 2); // Remove a vírgula extra
+//        query.append(")");
+//        return query.toString();
+//    }
+    private String buildInsertQuery(String tableName, String[] columns) {
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO ").append(tableName).append(" (");
         query.append(String.join(", ", columns));
         query.append(") VALUES (");
-        query.append("?, ".repeat(columns.length));
-        query.setLength(query.length() - 2); // Remove a vírgula extra
+
+        // Alternativa para repetir a string
+        for (int i = 0; i < columns.length; i++) {
+            query.append("?, ");
+        }
+        query.setLength(query.length() - 2); // Remove a vírgula extra no final
         query.append(")");
+
         return query.toString();
     }
 
@@ -152,6 +167,7 @@ public class Database<T extends Identifiable> {
 
     // Interface para mapear resultados para objetos
     public interface RowMapper<T> {
+
         T mapRow(ResultSet rs) throws SQLException;
     }
 }

@@ -20,7 +20,6 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
 //    public Pessoa() {
 //        this.dataCriacao = LocalDateTime.now();
 //    }
-
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -56,7 +55,6 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
 //    public void setDataModificacao() {
 //        this.dataModificacao = LocalDateTime.now();
 //    }
-
     public void setDataModificacao(LocalDateTime date) {
         this.dataModificacao = date;
     }
@@ -65,10 +63,21 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
         return this.dataModificacao;
     }
 
+//    @Override
+//    public String toString() {
+//        return "PESSOA => | id: " + super.getID() + " | nome: " + nome + " | nascimento: " + nascimento != null? nascimento.toString() : "" + " | telefone: " + telefone != null ? telefone : "" + " | dc: " + dataCriacao
+//                + " | dm: " + dataModificacao + " |";
+//    }
     @Override
     public String toString() {
-        return "PESSOA => | id: " + super.getID() + " | nome: " + nome + " | nascimento: " + utils.formatDateToString(nascimento) + " | telefone: " + telefone + " | dc: " + dataCriacao
-                + " | dm: " + dataModificacao + " |";
+        return "PESSOA => "
+                + "| id: " + super.getID()
+                + " | nome: " + (nome != null && !nome.trim().isEmpty() ? nome : "N/A")
+                + " | nascimento: " + (nascimento != null ? utils.formatDateToString(nascimento) : "N/A")
+                + " | telefone: " + (telefone != null && !telefone.trim().isEmpty() ? telefone : "N/A")
+                + " | data de criação: " + (dataCriacao != null ? dataCriacao : "N/A")
+                + " | data de modificação: " + (dataModificacao != null ? dataModificacao : "N/A")
+                + " |";
     }
 
     @Override
@@ -76,8 +85,14 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
         Pessoa pessoa = new Pessoa();
         pessoa.setID(rs.getInt("id"));
         pessoa.setNome(rs.getString("nome"));
-        pessoa.setNascimento(rs.getDate("datanascimento").toLocalDate());
-        pessoa.setTelefone(rs.getString("telefone"));
+        java.sql.Date date = rs.getDate("datanascimento");
+        if (date != null) {
+            pessoa.setNascimento(date.toLocalDate());
+        }
+        String telefone = rs.getString("telefone");
+        if (telefone != null && !telefone.trim().isEmpty()) {
+            pessoa.setTelefone(telefone);
+        }
         // Verifica se os campos não são nulos antes de converter
         java.sql.Timestamp dataCriacao = rs.getTimestamp("datacriacao");
         if (dataCriacao != null) {
@@ -94,3 +109,4 @@ public class Pessoa extends Identifiable implements Database.RowMapper<Pessoa> {
     }
 
 }
+//3953751
