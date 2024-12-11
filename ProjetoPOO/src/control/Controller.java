@@ -1105,7 +1105,7 @@ public class Controller {
                         try {
                             params.put("P_ID", 1);
 //                            JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(path);
-                            JasperPrint jasperPrint = JasperFillManager.fillReport(path, null, conn);
+                            JasperPrint jasperPrint = JasperFillManager.fillReport(path, params, conn);
                             JasperViewer.viewReport(jasperPrint, false);
                         } catch (JRException ex) {
                             JOptionPane.showMessageDialog(null, ex);
